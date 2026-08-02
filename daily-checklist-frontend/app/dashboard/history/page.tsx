@@ -1,29 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import { getMyHistory } from '@/services/checklist';
+import { getMyHistory } from "@/services/checklist";
 
-import { downloadChecklistPdf } from '@/app/utils/downloadChecklistPdf';
+import { downloadChecklistPdf } from "@/app/utils/downloadChecklistPdf";
 
-import Loader from '@/components/ui/Loader';
-
+import Loader from "@/components/ui/Loader";
 
 export default function HistoryPage() {
-
   const [selectedChecklist, setSelectedChecklist] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
-  const [history, setHistory] = useState<
-    any[]
-  >([]);
+  const [history, setHistory] = useState<any[]>([]);
 
-
-
-  
-
-  const [loading, setLoading] =
-    useState(true);
-    
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadHistory() {
@@ -44,16 +34,23 @@ export default function HistoryPage() {
   }
 
   return (
-  <div className="rounded-3xl border bg-white p-5 sm:p-6">
-    
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-5">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Checklist History
-        </h1>
-        <p className="mt-1 text-sm text-gray-500">
-          View all your submitted checklists.
-        </p>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold text-slate-800 sm:text-2xl lg:text-3xl">
+            Checklist History
+          </h1>
+
+          <p className="mt-1 text-sm leading-6 text-slate-500 sm:text-base">
+            View, review and manage all your submitted checklists.
+          </p>
+        </div>
+
+        {/* Optional Badge */}
+        <div className="w-fit rounded-xl bg-[#ACC822]/10 px-4 py-2 text-sm font-semibold text-[#ACC822]">
+          Total: {history.length}
+        </div>
       </div>
 
       {/* History */}
@@ -72,123 +69,128 @@ export default function HistoryPage() {
           history.map((item) => (
             <div
               key={item._id}
-              className="rounded-xl border border-gray-200 p-4 transition hover:border-[#ACC822] hover:shadow-md"
+              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#ACC822]/40 hover:shadow-lg sm:p-5 lg:p-6"
             >
-              {/* Top */}
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold text-gray-900">
-                    {item.title || "Checklist"}
-                  </h3>
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                {/* Left */}
+                <div className="min-w-0 flex-1">
+                  {/* Title + Date */}
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <h3 className="truncate text-lg font-bold text-slate-800 sm:text-xl">
+                      {item.title || "Checklist"}
+                    </h3>
 
-                  <p className="mt-1 text-sm text-gray-500">
+                    <span className="text-sm text-slate-500">
+                      {new Date(item.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  {/* ID */}
+                  <p className="mt-3 break-all text-xs text-slate-400 sm:text-sm">
                     ID: {item._id}
                   </p>
                 </div>
 
-                <span className="text-sm text-gray-500">
-                  {new Date(item.createdAt).toLocaleDateString()}
-                </span>
+                {/* Right */}
+                <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
+                  {/* PDF Button */}
+                  {/* Uncomment if needed */}
+                  {/*
+        <button
+          onClick={() => downloadChecklistPdf(item)}
+          className="flex w-full items-center justify-center rounded-xl border border-[#ACC822] px-5 py-3 text-sm font-semibold text-[#ACC822] transition-all duration-300 hover:bg-[#ACC822] hover:text-white sm:w-auto"
+        >
+          📄 Download PDF
+        </button>
+        */}
+
+                  {/* View Button */}
+                  <button
+                    onClick={() => {
+                      setSelectedChecklist(item);
+                      setShowModal(true);
+                    }}
+                    className="flex w-full items-center justify-center rounded-xl bg-[#ACC822] px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#96B51D] hover:shadow-lg sm:w-auto"
+                  >
+                    👁 View Details
+                  </button>
+                </div>
               </div>
-
-              <div className="mt-4 flex justify-end gap-3">
-              {/* <button
-                onClick={() => downloadChecklistPdf(item)}
-                className="rounded-lg border border-[#ACC822] px-4 py-2 text-sm font-medium text-[#ACC822] hover:bg-[#ACC822] hover:text-white"
-              >
-              📄 Download PDF      
-              </button> */}
-
-              <button
-                onClick={() => {
-                  setSelectedChecklist(item);
-                  setShowModal(true);
-                }}
-                className="rounded-lg bg-[#ACC822] px-4 py-2 text-sm font-medium text-white hover:bg-[#96B51D]"
-              > 
-                👁 View Details
-              </button>
-            </div>
             </div>
           ))
         )}
       </div>
-    
-    {showModal && selectedChecklist && (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-    onClick={() => setShowModal(false)}
-  >
-    <div
-      onClick={(e) => e.stopPropagation()}
-      className="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-xl"
-    >
-      <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">
-          {selectedChecklist.title}
-        </h2>
 
-        <button
+      {showModal && selectedChecklist && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           onClick={() => setShowModal(false)}
-          className="text-2xl text-gray-500 hover:text-black"
         >
-          ×
-        </button>
-      </div>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-xl"
+          >
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-2xl font-bold">{selectedChecklist.title}</h2>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <p className="text-gray-500">Date</p>
-          <p className="font-semibold">
-            {new Date(selectedChecklist.createdAt).toLocaleDateString()}
-          </p>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-2xl text-gray-500 hover:text-black"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <p className="text-gray-500">Date</p>
+                <p className="font-semibold">
+                  {new Date(selectedChecklist.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Appointment</p>
+                <p className="font-semibold">
+                  {selectedChecklist.appointment || "-"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Daily Expense</p>
+                <p className="font-semibold">
+                  {selectedChecklist.dailyExpense}
+                </p>
+              </div>
+            </div>
+
+            <hr className="my-6" />
+
+            <h3 className="mb-4 text-lg font-semibold">Checklist Items</h3>
+
+            <div className="space-y-3 max-h-80 overflow-y-auto">
+              {selectedChecklist.answers.map((answer: any, index: number) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between rounded-lg border p-4"
+                >
+                  <span>{answer.question}</span>
+
+                  <span
+                    className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                      answer.answer === "Yes"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {answer.answer}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-
-        <div>
-          <p className="text-gray-500">Appointment</p>
-          <p className="font-semibold">
-            {selectedChecklist.appointment || "-"}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-gray-500">Daily Expense</p>
-          <p className="font-semibold">
-            {selectedChecklist.dailyExpense}
-          </p>
-        </div>
-      </div>
-
-      <hr className="my-6" />
-
-      <h3 className="mb-4 text-lg font-semibold">
-        Checklist Items
-      </h3>
-
-      <div className="space-y-3 max-h-80 overflow-y-auto">
-        {selectedChecklist.answers.map(
-  (answer: any, index: number) => (
-    <div
-      key={index}
-      className="flex items-center justify-between rounded-lg border p-4"
-    >
-      <span>{answer.question}</span>
-
-      <span
-        className={`rounded-full px-3 py-1 text-sm font-semibold ${
-          answer.answer === "Yes"
-            ? "bg-green-100 text-green-700"
-            : "bg-red-100 text-red-700"
-        }`}
-      >
-        {answer.answer}
-      </span>
+      )}
     </div>
-
-        ))}
-      </div>
-    </div>
-  </div>
-)}
-  </div>
-);}
+  );
+}

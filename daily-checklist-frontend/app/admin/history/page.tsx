@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Checklist } from '@/types/checklist';
-import Loader from '@/components/ui/Loader';
-import HistoryTable from '@/components/admin/HistoryTable';
-import { getAllChecklistHistory } from '@/services/admin';
+import { useEffect, useState } from "react";
+import { Checklist } from "@/types/checklist";
+import Loader from "@/components/ui/Loader";
+import HistoryTable from "@/components/admin/HistoryTable";
+import { getAllChecklistHistory } from "@/services/admin";
 
 export default function AdminHistoryPage() {
   const [history, setHistory] = useState<Checklist[]>([]);
@@ -31,11 +31,25 @@ export default function AdminHistoryPage() {
   }
 
   return (
-    <div>
-      <h1 className="mb-8 text-3xl font-bold">
-        All Checklist History
-      </h1>
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 lg:p-8">
+      {/* Header */}
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
+            All Checklist History
+          </h1>
 
+          <p className="mt-2 text-sm text-slate-500 sm:text-base">
+            Review and manage all submitted checklists.
+          </p>
+        </div>
+
+        <div className="w-fit rounded-xl bg-[#ACC822]/10 px-4 py-2 text-sm font-semibold text-[#ACC822]">
+          Total: {history.length}
+        </div>
+      </div>
+
+      {/* Table */}
       <HistoryTable
         history={history}
         onView={(item) => {
@@ -44,76 +58,94 @@ export default function AdminHistoryPage() {
         }}
       />
 
+      {/* Modal */}
       {showModal && selectedChecklist && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-6"
           onClick={() => setShowModal(false)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-xl"
+            className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
           >
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-2xl font-bold">
-                {selectedChecklist.title}
-              </h2>
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-slate-200 p-4 sm:p-6">
+              <div className="min-w-0">
+                <h2 className="truncate text-xl font-bold text-slate-800 sm:text-2xl">
+                  {selectedChecklist.title}
+                </h2>
+
+                <p className="mt-1 text-sm text-slate-500">Checklist Details</p>
+              </div>
 
               <button
                 onClick={() => setShowModal(false)}
-                className="text-2xl text-gray-500 hover:text-black"
+                className="ml-4 flex h-10 w-10 items-center justify-center rounded-xl transition hover:bg-slate-100"
               >
-                ×
+                <span className="text-2xl text-slate-500">×</span>
               </button>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <p className="text-gray-500">Date</p>
-                <p className="font-semibold">
-                  {new Date(selectedChecklist.createdAt).toLocaleDateString()}
-                </p>
-              </div>
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+              {/* Info */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-sm text-slate-500">Date</p>
 
-              <div>
-                <p className="text-gray-500">Appointment</p>
-                <p className="font-semibold">
-                  {selectedChecklist.appointment || '-'}
-                </p>
-              </div>
-
-              <div>
-  <p className="text-gray-500">Daily Expense</p>
-  <p className="font-semibold">
-    {selectedChecklist.DailyExpanse || '-'}
-  </p>
-</div>
-            </div>
-
-            <hr className="my-6" />
-
-            <h3 className="mb-4 text-lg font-semibold">
-              Checklist Items
-            </h3>
-
-            <div className="max-h-80 space-y-3 overflow-y-auto">
-              {selectedChecklist.answers?.map((answer: any, index: number) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between rounded-lg border p-4"
-                >
-                  <span>{answer.question}</span>
-
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                      answer.answer === 'Yes'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
-                    }`}
-                  >
-                    {answer.answer}
-                  </span>
+                  <p className="mt-1 font-semibold text-slate-800">
+                    {new Date(selectedChecklist.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
-              ))}
+
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-sm text-slate-500">Appointment</p>
+
+                  <p className="mt-1 break-words font-semibold text-slate-800">
+                    {selectedChecklist.appointment || "-"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-sm text-slate-500">Daily Expense</p>
+
+                  <p className="mt-1 break-words font-semibold text-slate-800">
+                    {selectedChecklist.DailyExpanse || "-"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Checklist */}
+              <div className="mt-8">
+                <h3 className="mb-4 text-lg font-bold text-slate-800">
+                  Checklist Items
+                </h3>
+
+                <div className="space-y-3">
+                  {selectedChecklist.answers?.map((answer, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 transition hover:border-[#ACC822]/40 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="min-w-0">
+                        <p className="break-words font-medium text-slate-800">
+                          {answer.question}
+                        </p>
+                      </div>
+
+                      <span
+                        className={`w-fit rounded-full px-4 py-2 text-sm font-semibold ${
+                          answer.answer === "Yes"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {answer.answer}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

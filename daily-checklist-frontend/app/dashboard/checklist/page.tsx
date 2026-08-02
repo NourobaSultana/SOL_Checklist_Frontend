@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState , useEffect} from 'react';
-import toast from 'react-hot-toast';
-import { Question } from '@/types/question';
-import { ChecklistAnswer } from '@/types/checklist';
-import Button from '@/components/ui/Button';
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { Question } from "@/types/question";
+import { ChecklistAnswer } from "@/types/checklist";
+import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
-import { submitChecklist } from '@/services/checklist';
+import { submitChecklist } from "@/services/checklist";
 import { HiOutlineClipboardDocumentCheck } from "react-icons/hi2";
 import jsPDF from "jspdf";
 import {
@@ -15,92 +15,73 @@ import {
   updateQuestion,
   deleteQuestion,
 } from "@/services/question";
-import { FiCheck,FiDownload,  FiTrash2,FiEdit,FiPlus} from 'react-icons/fi';
+import { FiCheck, FiDownload, FiTrash2, FiEdit, FiPlus } from "react-icons/fi";
 
 export default function ChecklistPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const [loading, setLoading] = useState(false);
-  
+
   const [editingQuestion, setEditingQuestion] = useState<any>(null);
   const [question, setQuestion] = useState("");
 
   const [questions, setQuestions] = useState<Question[]>([]);
-  
 
-  const [newQuestion, setNewQuestion] =
-  useState("");
+  const [newQuestion, setNewQuestion] = useState("");
 
-  const [editingId, setEditingId] =
-    useState("");
+  const [editingId, setEditingId] = useState("");
 
-  const [editingText, setEditingText] =
-    useState("");
+  const [editingText, setEditingText] = useState("");
 
-  
+  async function handleAddQuestion() {
+    if (!newQuestion.trim()) return;
 
+    await createQuestion(newQuestion);
 
-    async function handleAddQuestion() {
-  if (!newQuestion.trim()) return;
+    setNewQuestion("");
 
-  await createQuestion(newQuestion);
+    loadQuestions();
 
-  setNewQuestion("");
+    toast.success("Question added");
+  }
 
-  loadQuestions();
+  async function handleDelete(id: string) {
+    await deleteQuestion(id);
 
-  toast.success("Question added");
-}
+    loadQuestions();
 
+    toast.success("Question deleted");
+  }
 
-async function handleDelete(id: string) {
-  await deleteQuestion(id);
+  async function handleUpdate() {
+    await updateQuestion(editingId, editingText);
 
-  loadQuestions();
+    setEditingId("");
 
-  toast.success("Question deleted");
-}
+    setEditingText("");
 
+    loadQuestions();
 
+    toast.success("Question updated");
+  }
 
-async function handleUpdate() {
-  await updateQuestion(
-    editingId,
-    editingText,
-  );
+  const [appointment, setAppointment] = useState("");
 
-  setEditingId("");
+  const [DailyExpanse, setDailyExpanse] = useState("");
 
-  setEditingText("");
-
-  loadQuestions();
-
-  toast.success("Question updated");
-}
-
-  const [appointment, setAppointment] =
-    useState('');
-
-  const [DailyExpanse, setDailyExpanse] = useState('');
-
-
-  const [answers, setAnswers] =
-  useState<ChecklistAnswer[]>([]);
+  const [answers, setAnswers] = useState<ChecklistAnswer[]>([]);
 
   const handleEdit = (question: any) => {
-  setEditingQuestion(question);
-  setQuestion(question.question);
-};
+    setEditingQuestion(question);
+    setQuestion(question.question);
+  };
 
-    const completedCount = answers.filter((i) => i.answer === 'Yes').length;
-    const totalCount = answers.length;
-    const progress =
+  const completedCount = answers.filter((i) => i.answer === "Yes").length;
+  const totalCount = answers.length;
+  const progress =
     totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
-  function changeAnswer(
-    index: number,
-    value: 'Yes' | 'No',
-  ) {
+  function changeAnswer(index: number, value: "Yes" | "No") {
     const updated = [...answers];
 
     updated[index].answer = value;
@@ -127,11 +108,7 @@ async function handleUpdate() {
     );
 
     y += 5;
-    doc.text(
-      `Generated: ${new Date().toLocaleString()}`,
-      marginX,
-      y
-    );
+    doc.text(`Generated: ${new Date().toLocaleString()}`, marginX, y);
 
     y += 10;
     doc.setDrawColor(200);
@@ -145,43 +122,41 @@ async function handleUpdate() {
         y = 18;
       }
       answers.forEach((item, index) => {
-      const status = item.answer;
+        const status = item.answer;
 
-      doc.text(`${index + 1}.`, marginX, y);
-      doc.text(item.question, marginX + 8, y);
-      doc.text(status, 180, y);
+        doc.text(`${index + 1}.`, marginX, y);
+        doc.text(item.question, marginX + 8, y);
+        doc.text(status, 180, y);
 
-      y += 8;
+        y += 8;
+      });
+
+      doc.save("onboarding-checklist.pdf");
     });
-
-    doc.save("onboarding-checklist.pdf");
-
-  });}
-
-
+  };
 
   async function handleSaveQuestion() {
-  try {
-    if (!question.trim()) return;
+    try {
+      if (!question.trim()) return;
 
-    if (editingQuestion) {
-      await updateQuestion(editingQuestion._id, question);
+      if (editingQuestion) {
+        await updateQuestion(editingQuestion._id, question);
 
-      toast.success("Question updated successfully.");
-    } else {
-      await createQuestion(question);
+        toast.success("Question updated successfully.");
+      } else {
+        await createQuestion(question);
 
-      toast.success("Question added successfully.");
+        toast.success("Question added successfully.");
+      }
+
+      setQuestion("");
+      setEditingQuestion(null);
+
+      loadQuestions();
+    } catch (error) {
+      toast.error("Operation failed.");
     }
-
-    setQuestion("");
-    setEditingQuestion(null);
-
-    loadQuestions();
-  } catch (error) {
-    toast.error("Operation failed.");
   }
-}
 
   async function handleSubmit() {
     try {
@@ -193,258 +168,413 @@ async function handleUpdate() {
         DailyExpanse,
       });
 
-      toast.success(
-        'Checklist submitted successfully.'
-      );
+      toast.success("Checklist submitted successfully.");
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ??
-          'Submission failed.'
-      );
+      toast.error(error?.response?.data?.message ?? "Submission failed.");
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-  loadQuestions();
+    loadQuestions();
   }, []);
 
+  async function loadQuestions() {
+    const data = await getQuestions();
 
-async function loadQuestions() {
-  const data = await getQuestions();
+    // Save questions for admin
+    setQuestions(data);
 
-  // Save questions for admin
-  setQuestions(data);
-
-  // Create answers for users
-  setAnswers(
-    data.map((item) => ({
-      question: item.question,
-      answer: "No",
-    }))
-  );
-}
-
+    // Create answers for users
+    setAnswers(
+      data.map((item) => ({
+        question: item.question,
+        answer: "No",
+      })),
+    );
+  }
 
   return (
-    <div className="rounded-3xl border p-5 sm:p-6">
-      <div className="mb-6 flex items-center justify-between">
-      {/* Left Side */}
-      <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ACC822]/15">
-          <HiOutlineClipboardDocumentCheck
-            size={22}
-            className="text-[#ACC822]"
-          />
-        </div>
+    <div className="rounded-3xl  p-5 sm:p-6">
+      <div className="mb-8 rounded-3xl border border-slate-200 bg-gradient-to-r from-white via-slate-50 to-lime-50 p-4 shadow-sm sm:p-6 lg:p-8">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+          {/* Left */}
+          <div className="flex min-w-0 items-center gap-4">
+            {/* Icon */}
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#ACC822]/15 shadow-sm sm:h-14 sm:w-14">
+              <HiOutlineClipboardDocumentCheck
+                className="text-[#ACC822]"
+                size={26}
+              />
+            </div>
 
-        <div>
-          <h2 className="text-[18px] font-semibold">
-            Onboarding Checklist
-          </h2>
+            {/* Text */}
+            <div className="min-w-0">
+              <h2 className="truncate text-lg font-bold text-slate-800 sm:text-xl lg:text-2xl">
+                Onboarding Checklist
+              </h2>
 
-          <p className="text-[13px] text-gray-500">
-            {completedCount} of {totalCount} tasks completed
-          </p>
+              <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+                {completedCount} of {totalCount} tasks completed
+              </p>
+            </div>
+          </div>
+
+          {/* Right */}
+          <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-center xl:w-auto">
+            {/* Progress */}
+            <div className="flex w-full items-center gap-3 lg:max-w-sm">
+              <div className="h-3 flex-1 overflow-hidden rounded-full bg-slate-200">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#ACC822] via-lime-500 to-green-500 transition-all duration-700"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+
+              <span className="w-12 text-right text-sm font-bold text-slate-700">
+                {progress}%
+              </span>
+            </div>
+
+            {/* Download */}
+            <button
+              onClick={handleDownloadPdf}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#ACC822] px-5 py-3 text-sm font-semibold text-white shadow transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#96B51D] hover:shadow-lg sm:w-auto"
+            >
+              <FiDownload size={18} />
+
+              <span>Download PDF</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Right Side */}
-      <div className="flex items-center gap-2">
-        <div className="h-2.5 w-32 overflow-hidden rounded-full bg-gray-200">
-          <div
-            className="h-full rounded-full bg-[#ACC822] transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
+      {isAdmin && (
+        <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+          {/* Header */}
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <h3 className="text-xl font-bold text-slate-800 sm:text-2xl">
+                Manage Questions
+              </h3>
 
-        <span className="text-[13px] font-semibold">
-          {progress}%
-        </span>
+              <p className="mt-1 text-sm text-slate-500">
+                Add, update or remove onboarding checklist questions.
+              </p>
+            </div>
 
-        <button
-                onClick={handleDownloadPdf}
-                className="flex items-center gap-1.5 rounded-xl bg-[#ACC822] px-3 py-2 text-[13px] font-semibold text-white transition-colors duration-200 hover:bg-[#96b31d]"
+            <div className="w-fit rounded-xl bg-[#ACC822]/10 px-4 py-2 text-sm font-semibold text-[#ACC822]">
+              Total: {questions.length}
+            </div>
+          </div>
+
+          {/* Add Question */}
+          <div className="mb-8 flex flex-col gap-3 md:flex-row">
+            <input
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Enter your question..."
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20"
+            />
+
+            <button
+              onClick={handleSaveQuestion}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#ACC822] px-6 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#96B51D] hover:shadow-lg md:w-auto"
+            >
+              <FiPlus size={18} />
+
+              {editingQuestion ? "Update Question" : "Add Question"}
+            </button>
+          </div>
+
+          {/* Question List */}
+          <div className="space-y-4">
+            {questions.map((item, index) => (
+              <div
+                key={item._id}
+                className="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition-all duration-300 hover:border-[#ACC822]/30 hover:bg-white hover:shadow-md"
               >
-                <FiDownload size={15} />
-                PDF
-              </button>
-      </div>
-    </div>
+                <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                  {/* Left */}
+                  <div className="flex min-w-0 items-start gap-4">
+                    {/* Number */}
+                    <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#ACC822]/15 font-bold text-[#ACC822]">
+                      {index + 1}
+                    </div>
 
+                    {/* Question */}
+                    <div className="min-w-0">
+                      <p className="break-words text-sm font-medium leading-7 text-slate-700 sm:text-base">
+                        {item.question}
+                      </p>
+                    </div>
+                  </div>
 
-    {isAdmin && (
-  <div className="mb-6 rounded-xl border bg-white p-4">
-    <h3 className="mb-4 text-lg font-semibold">
-      Manage Questions
-    </h3>
+                  {/* Actions */}
+                  <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-600 transition-all duration-300 hover:bg-blue-500 hover:text-white sm:flex-none"
+                    >
+                      <FiEdit size={16} />
+                      Edit
+                    </button>
 
-    <div className="flex gap-3">
-      <input
-        type="text"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-        placeholder="Enter question..."
-        className="flex-1 rounded-lg border px-4 py-2"
-      />
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 transition-all duration-300 hover:bg-red-500 hover:text-white sm:flex-none"
+                    >
+                      <FiTrash2 size={16} />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
 
-      <button
-        onClick={handleSaveQuestion}
-        className="flex items-center gap-2 rounded-lg bg-[#ACC822] px-4 py-2 text-white hover:bg-[#96B51D]"
-      >
-        <FiPlus size={16} />
-        {editingQuestion ? "Update" : "Add"}
-      </button>
-    </div>
+          {/* Empty State */}
+          {questions.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-slate-300 py-14 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+                📋
+              </div>
 
-    <div className="mt-4 space-y-2">
-    {questions.map((item) => (
-      <div
-        key={item._id}
-        className="flex items-center justify-between rounded-lg border p-3"
-      >
-        <span>{item.question}</span>
+              <h4 className="text-lg font-semibold text-slate-700">
+                No Questions Found
+              </h4>
 
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleEdit(item)}
-            className="flex items-center gap-1 rounded-lg bg-blue-500 px-3 py-1.5 text-white hover:bg-blue-600"
-          >
-            <FiEdit size={15} />
-            Edit
-          </button>
-
-          <button
-            onClick={() => handleDelete(item._id)}
-            className="flex items-center gap-1 rounded-lg bg-red-500 px-3 py-1.5 text-white hover:bg-red-600"
-          >
-            <FiTrash2 size={15} />
-            Delete
-          </button>
+              <p className="mt-2 text-sm text-slate-500">
+                Add your first onboarding question to get started.
+              </p>
+            </div>
+          )}
         </div>
-      </div>
-    ))}
-  </div>
-  </div>
-  
-)}
-        
-      
-  <div className="space-y-2.5">
-  {answers.map((item, index) => (
-    <div
-      key={index}
-      className="group flex items-center gap-3 rounded-2xl border border-[#F0F0F0] px-4 py-3 transition-all duration-200 hover:bg-[#ACC822]/15 hover:text-[#ACC822]"
-    >
-      {/* Checkmark */}
-      <div
-        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200 ${
-          item.answer === "Yes"
-            ? "border-[#ACC822] bg-[#ACC822]"
-            : "border-gray-300"
-        }`}
-      >
-        {item.answer === "Yes" && (
-          <FiCheck
-            size={15}
-            className="text-white"
-            strokeWidth={3}
-          />
-        )}
-      </div>
+      )}
 
-      {/* Question */}
-      <p
-        className={`flex-1 min-w-[140px] text-[15px] transition-all duration-200 ${
-          item.answer === "Yes"
-            ? "text-gray-400"
-            : "text-gray-700"
-        }`}
-      >
-        {item.question}
-      </p>
+      <div className="space-y-2.5">
+        {answers.map((item, index) => (
+          <div
+            key={index}
+            className={`group rounded-3xl border p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-5 lg:p-6 ${
+              item.answer === "Yes"
+                ? "border-[#ACC822]/30 bg-[#ACC822]/5"
+                : item.answer === "No"
+                  ? "border-red-200 bg-red-50/40"
+                  : "border-slate-200 bg-white hover:border-[#ACC822]/30"
+            }`}
+          >
+            <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+              {/* Left */}
+              <div className="flex min-w-0 items-start gap-4">
+                {/* Status Icon */}
+                <div
+                  className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl border-2 transition-all sm:h-11 sm:w-11 ${
+                    item.answer === "Yes"
+                      ? "border-[#ACC822] bg-[#ACC822]"
+                      : item.answer === "No"
+                        ? "border-red-500 bg-red-500"
+                        : "border-slate-300 bg-white"
+                  }`}
+                >
+                  {item.answer === "Yes" && (
+                    <FiCheck size={18} className="text-white" />
+                  )}
 
-      {/* Right Side */}
-      <div className="flex shrink-0 items-center gap-2">
+                  {item.answer === "No" && (
+                    <span className="text-base font-bold text-white">✕</span>
+                  )}
+                </div>
 
-        {/* Yes / No */}
-        <button
-          onClick={() => changeAnswer(index, "Yes")}
-          className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition ${
-            item.answer === "Yes"
-              ? "border-[#ACC822] bg-[#ACC822] text-white"
-              : "border-gray-300 text-gray-500 hover:border-[#ACC822] hover:text-[#ACC822]"
-          }`}
-        >
-          Yes
-        </button>
+                {/* Question */}
+                <div className="min-w-0 flex-1">
+                  <h3 className="break-words text-sm font-semibold leading-6 text-slate-800 sm:text-base lg:text-lg">
+                    {item.question}
+                  </h3>
 
-        <button
-          onClick={() => changeAnswer(index, "No")}
-          className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition ${
-            item.answer === "No"
-              ? "border-red-500 bg-red-500 text-white"
-              : "border-gray-300 text-gray-500 hover:border-red-400 hover:text-red-500"
-          }`}
-        >
-          No
-        </button>
-      </div>
-    </div>
-  ))}
+                  <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+                    Question #{index + 1}
+                  </p>
+                </div>
+              </div>
 
-    {answers.length === 0 && (
-          <div className="text-center py-10">
-            <p className="text-[14px]">
-              🎉 All tasks completed — great job!
+              {/* Buttons */}
+              <div className="flex w-full flex-col gap-3 sm:flex-row xl:w-auto">
+                {/* YES */}
+                <button
+                  onClick={() => changeAnswer(index, "Yes")}
+                  className={`flex h-11 flex-1 items-center justify-center rounded-xl px-6 text-sm font-semibold transition-all duration-300 sm:h-12 sm:flex-none ${
+                    item.answer === "Yes"
+                      ? "bg-[#ACC822] text-white shadow-lg"
+                      : "border border-slate-300 bg-white text-slate-600 hover:border-[#ACC822] hover:bg-[#ACC822]/10 hover:text-[#ACC822]"
+                  }`}
+                >
+                  Yes
+                </button>
+
+                {/* NO */}
+                <button
+                  onClick={() => changeAnswer(index, "No")}
+                  className={`flex h-11 flex-1 items-center justify-center rounded-xl px-6 text-sm font-semibold transition-all duration-300 sm:h-12 sm:flex-none ${
+                    item.answer === "No"
+                      ? "bg-red-500 text-white shadow-lg"
+                      : "border border-slate-300 bg-white text-slate-600 hover:border-red-400 hover:bg-red-50 hover:text-red-500"
+                  }`}
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {answers.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-gradient-to-br from-slate-50 to-lime-50 px-5 py-10 text-center shadow-sm sm:rounded-3xl sm:px-8 sm:py-14">
+            {/* Icon */}
+            <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-[#ACC822]/10 sm:h-16 sm:w-16 lg:h-20 lg:w-20">
+              <FiCheck className="h-6 w-6 text-[#ACC822] sm:h-7 sm:w-7 lg:h-9 lg:w-9" />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-lg font-bold text-slate-800 sm:text-xl lg:text-2xl">
+              🎉 All Tasks Completed
+            </h3>
+
+            {/* Description */}
+            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500 sm:text-base">
+              Great job! You've completed every checklist item. Your progress
+              has been successfully recorded.
             </p>
+
+            {/* Optional Badge */}
+            <div className="mt-6 inline-flex items-center rounded-full bg-[#ACC822]/10 px-4 py-2 text-sm font-semibold text-[#7E9E18]">
+              ✔ 100% Completed
+            </div>
           </div>
         )}
 
-        <div>
-          <label className="mb-2 block font-semibold">
-            Today's Appointment
-          </label>
+        {/* Appointment & Expense */}
+        <div className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
+          {/* Appointment */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:rounded-3xl sm:p-6 lg:p-8">
+            {/* Header */}
+            <div className="mb-5 flex items-start gap-3 sm:items-center sm:gap-4">
+              {/* Icon */}
+              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-[#ACC822]/15 text-xl sm:h-12 sm:w-12 sm:text-2xl lg:h-14 lg:w-14">
+                📅
+              </div>
 
-          <textarea
-            value={appointment}
-            onChange={(e) =>
-              setAppointment(e.target.value)
-            }
-             className="w-full rounded-xl border p-4 focus:outline-none focus:ring-2 focus:ring-[#ACC822]"
-            rows={4}
-          />
+              {/* Title */}
+              <div className="min-w-0">
+                <h3 className="text-base font-bold text-slate-800 sm:text-lg lg:text-xl">
+                  Today's Appointment
+                </h3>
+
+                <p className="mt-1 text-xs leading-5 text-slate-500 sm:text-sm">
+                  Add your meeting or appointment details.
+                </p>
+              </div>
+            </div>
+
+            {/* Textarea */}
+            <textarea
+              value={appointment}
+              onChange={(e) => setAppointment(e.target.value)}
+              rows={6}
+              placeholder="Write today's appointments..."
+              className="min-h-[160px] w-full resize-y rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20 sm:p-4 sm:text-base"
+            />
+          </div>
+
+          {/* Expense */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:rounded-3xl sm:p-6 lg:p-8">
+            {/* Header */}
+            <div className="mb-5 flex items-start gap-3 sm:items-center sm:gap-4">
+              {/* Icon */}
+              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-xl sm:h-12 sm:w-12 sm:text-2xl lg:h-14 lg:w-14">
+                💰
+              </div>
+
+              {/* Title */}
+              <div className="min-w-0">
+                <h3 className="text-base font-bold text-slate-800 sm:text-lg lg:text-xl">
+                  Today's Expense
+                </h3>
+
+                <p className="mt-1 text-xs leading-5 text-slate-500 sm:text-sm">
+                  Record today's expenses and keep your daily spending
+                  organized.
+                </p>
+              </div>
+            </div>
+
+            {/* Textarea */}
+            <textarea
+              value={DailyExpanse}
+              onChange={(e) => setDailyExpanse(e.target.value)}
+              rows={6}
+              placeholder="Write today's expenses..."
+              className="min-h-[160px] w-full resize-y rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20 sm:p-4 sm:text-base"
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="mb-2 block font-semibold">
-            Today's Expense
-          </label>
+        {/* Submit Section */}
+        <div className="mt-8 rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 via-white to-lime-50 p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:rounded-3xl sm:p-6 lg:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            {/* Left Content */}
+            <div className="max-w-2xl">
+              <h3 className="text-lg font-bold text-slate-800 sm:text-xl lg:text-2xl">
+                Ready to Submit?
+              </h3>
 
-          <textarea
-            value={DailyExpanse}
-            onChange={(e) =>
-              setDailyExpanse(e.target.value)
-            }
-            className="w-full rounded-xl border p-4 focus:outline-none focus:ring-2 focus:ring-[#ACC822]"
-             rows={2}
-            
-            
-          />
+              <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
+                Review your checklist, appointments, and expenses before
+                submitting. Once submitted, your progress will be saved for
+                today's report.
+              </p>
+            </div>
+
+            {/* Submit Button */}
+            <Button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="flex w-full items-center justify-center rounded-2xl bg-[#ACC822] px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#96B51D] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60 sm:px-8 sm:py-4 sm:text-base lg:w-auto lg:min-w-[220px]"
+            >
+              {loading ? (
+                <>
+                  <svg
+                    className="mr-2 h-5 w-5 animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                  Submitting...
+                </>
+              ) : (
+                "Submit Checklist"
+              )}
+            </Button>
+          </div>
         </div>
-
-        <div className="flex justify-end">
-        <Button
-        onClick={handleSubmit}
-        disabled={loading}
-        className="bg-[#ACC822] hover:bg-[#96B51D] text-white px-4 py-2 text-sm"
-      >
-        {loading ? "Submitting..." : "Submit"}
-      </Button>
       </div>
-     </div>
     </div>
-   
   );
 }
