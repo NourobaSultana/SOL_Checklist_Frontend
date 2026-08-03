@@ -9,6 +9,7 @@ import {
   History,
   User,
   LogOut,
+  Receipt,
 } from "lucide-react";
 
 import { useAuth } from "@/context/AuthContext";
@@ -41,6 +42,16 @@ export default function Sidebar() {
             href: "/dashboard/profile",
             icon: User,
           },
+          {
+            title: "Today's Appointment",
+            href: "/dashboard/todaysAppointment",
+            icon: ClipboardCheck,
+          },
+          {
+            title: "Today's Expense",
+            href: "/dashboard/todaysExpense",
+            icon: Receipt,
+          },
         ]
       : [
           {
@@ -62,6 +73,16 @@ export default function Sidebar() {
             title: "Profile",
             href: "/dashboard/profile",
             icon: User,
+          },
+          {
+            title: "Today's Appointment",
+            href: "/dashboard/todaysAppointment",
+            icon: ClipboardCheck,
+          },
+          {
+            title: "Today's Expense",
+            href: "/dashboard/todaysExpense",
+            icon: Receipt,
           },
         ];
 
@@ -122,7 +143,7 @@ export default function Sidebar() {
       <div className="border-t border-slate-200 p-5">
         <button
           onClick={logout}
-          className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-red-500 to-rose-500 px-5 py-3 font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+          className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-red-600 to-red-400 px-5 py-3 font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
         >
           <LogOut size={20} />
           Logout

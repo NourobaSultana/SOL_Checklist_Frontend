@@ -46,11 +46,44 @@ export default function ChecklistPage() {
   }
 
   async function handleDelete(id: string) {
-    await deleteQuestion(id);
+    toast.custom((t) => (
+      <div className="w-[360px] rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+        <h3 className="text-base font-semibold text-slate-800">
+          Delete Question
+        </h3>
 
-    loadQuestions();
+        <p className="mt-2 text-sm text-slate-500">
+          Are you sure you want to delete this item?
+        </p>
 
-    toast.success("Question deleted");
+        <div className="mt-5 flex justify-end gap-3">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+          >
+            No
+          </button>
+
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+
+              try {
+                await deleteQuestion(id);
+                loadQuestions();
+
+                toast.success("Question deleted successfully.");
+              } catch {
+                toast.error("Failed to delete question.");
+              }
+            }}
+            className="rounded-xl bg-red-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600"
+          >
+            Yes
+          </button>
+        </div>
+      </div>
+    ));
   }
 
   async function handleUpdate() {
@@ -454,72 +487,6 @@ export default function ChecklistPage() {
             </div>
           </div>
         )}
-
-        {/* Appointment & Expense */}
-        <div className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
-          {/* Appointment */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:rounded-3xl sm:p-6 lg:p-8">
-            {/* Header */}
-            <div className="mb-5 flex items-start gap-3 sm:items-center sm:gap-4">
-              {/* Icon */}
-              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-[#ACC822]/15 text-xl sm:h-12 sm:w-12 sm:text-2xl lg:h-14 lg:w-14">
-                📅
-              </div>
-
-              {/* Title */}
-              <div className="min-w-0">
-                <h3 className="text-base font-bold text-slate-800 sm:text-lg lg:text-xl">
-                  Today's Appointment
-                </h3>
-
-                <p className="mt-1 text-xs leading-5 text-slate-500 sm:text-sm">
-                  Add your meeting or appointment details.
-                </p>
-              </div>
-            </div>
-
-            {/* Textarea */}
-            <textarea
-              value={appointment}
-              onChange={(e) => setAppointment(e.target.value)}
-              rows={6}
-              placeholder="Write today's appointments..."
-              className="min-h-[160px] w-full resize-y rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20 sm:p-4 sm:text-base"
-            />
-          </div>
-
-          {/* Expense */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:rounded-3xl sm:p-6 lg:p-8">
-            {/* Header */}
-            <div className="mb-5 flex items-start gap-3 sm:items-center sm:gap-4">
-              {/* Icon */}
-              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-xl sm:h-12 sm:w-12 sm:text-2xl lg:h-14 lg:w-14">
-                💰
-              </div>
-
-              {/* Title */}
-              <div className="min-w-0">
-                <h3 className="text-base font-bold text-slate-800 sm:text-lg lg:text-xl">
-                  Today's Expense
-                </h3>
-
-                <p className="mt-1 text-xs leading-5 text-slate-500 sm:text-sm">
-                  Record today's expenses and keep your daily spending
-                  organized.
-                </p>
-              </div>
-            </div>
-
-            {/* Textarea */}
-            <textarea
-              value={DailyExpanse}
-              onChange={(e) => setDailyExpanse(e.target.value)}
-              rows={6}
-              placeholder="Write today's expenses..."
-              className="min-h-[160px] w-full resize-y rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20 sm:p-4 sm:text-base"
-            />
-          </div>
-        </div>
 
         {/* Submit Section */}
         <div className="mt-8 rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 via-white to-lime-50 p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:rounded-3xl sm:p-6 lg:p-8">

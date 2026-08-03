@@ -80,7 +80,7 @@ export default function HistoryPage() {
                       {item.title || "Checklist"}
                     </h3>
 
-                    <span className="text-sm text-slate-500">
+                    <span className="text-sm text-red-500">
                       {new Date(item.createdAt).toLocaleDateString()}
                     </span>
                   </div>

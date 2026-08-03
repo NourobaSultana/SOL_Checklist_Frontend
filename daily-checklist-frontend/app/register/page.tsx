@@ -1,30 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
-import Input from '@/components/ui/Input';
-import Link from 'next/link';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import Input from "@/components/ui/Input";
+import Link from "next/link";
 
-
-import { registerUser } from '@/services/auth';
+import { registerUser } from "@/services/auth";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function RegisterPage() {
   const router = useRouter();
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
-  const [password, setPassword] =
-    useState('');
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  async function handleRegister(
-    e: React.FormEvent<HTMLFormElement>,
-  ) {
+  async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     try {
@@ -36,22 +33,17 @@ export default function RegisterPage() {
         password,
       });
 
-        toast.success(
-        'Registration successful. Please login.',
-      );
+      toast.success("Registration successful. Please login.");
 
-      router.push('/login');
+      router.push("/login");
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ??
-          'Registration failed',
-      );
+      toast.error(error?.response?.data?.message ?? "Registration failed");
     } finally {
       setLoading(false);
     }
   }
 
-   return (
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 via-white to-indigo-100 px-4">
       <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl border border-gray-100">
         {/* Heading */}
@@ -77,9 +69,7 @@ export default function RegisterPage() {
                 placeholder="Enter your full name"
                 className="w-full outline-none bg-transparent"
                 value={name}
-                onChange={(e) =>
-                setName(e.target.value)
-            }
+                onChange={(e) => setName(e.target.value)}
                 required
               />
             </div>
@@ -96,9 +86,7 @@ export default function RegisterPage() {
                 placeholder="Enter your email"
                 className="w-full outline-none bg-transparent"
                 value={email}
-                onChange={(e) =>
-                  setEmail(e.target.value)
-                }
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -109,17 +97,24 @@ export default function RegisterPage() {
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Password
             </label>
+
             <div className="flex items-center gap-3 rounded-xl border border-gray-300 px-4 py-3 transition-all duration-300 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-200">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Create a password"
                 className="w-full outline-none bg-transparent"
                 value={password}
-                onChange={(e) =>
-                setPassword(e.target.value)
-                }
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-gray-500 hover:text-[#7c9e1a]  transition-colors"
+              >
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </button>
             </div>
           </div>
 
@@ -128,16 +123,16 @@ export default function RegisterPage() {
             <input
               type="checkbox"
               id="terms"
-              className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              className="mt-1 h-4 w-4 rounded border-gray-300 text-[#7c9e1a] focus:ring-[#96b51d]"
               required
             />
             <label htmlFor="terms" className="text-sm text-gray-500">
               I agree to the{" "}
-              <span className="font-medium text-indigo-600 hover:text-indigo-800 cursor-pointer">
+              <span className="font-medium text-[#7c9e1a] hover:text-indigo-800 cursor-pointer">
                 Terms of Service
               </span>{" "}
               and{" "}
-              <span className="font-medium text-indigo-600 hover:text-indigo-800 cursor-pointer">
+              <span className="font-medium text-[#7c9e1a] hover:text-indigo-800 cursor-pointer">
                 Privacy Policy
               </span>
             </label>
@@ -146,7 +141,7 @@ export default function RegisterPage() {
           {/* Register Button */}
           <button
             type="submit"
-            className="w-full rounded-xl bg-indigo-600 py-3 text-white font-semibold transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:scale-[1.02] active:scale-95"
+            className="w-full rounded-xl bg-[#7c9e1a] py-3 text-white font-semibold transition-all duration-300 hover:bg-[#96b51d] hover:shadow-lg hover:scale-[1.02] active:scale-95"
           >
             Create Account
           </button>
@@ -157,7 +152,7 @@ export default function RegisterPage() {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="font-semibold text-indigo-600 hover:text-indigo-800"
+            className="font-semibold text-[#7c9e1a] hover:text-[#96b51d]"
           >
             Login
           </Link>
@@ -165,13 +160,7 @@ export default function RegisterPage() {
       </div>
     </div>
   );
-};
-
-
-
-
-
-
+}
 
 //   return (
 //     <main className="flex min-h-screen items-center justify-center bg-gray-100">

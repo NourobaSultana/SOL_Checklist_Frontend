@@ -24,10 +24,10 @@ export default function Navbar() {
       {/* Right */}
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Notification */}
-        <button className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white transition hover:bg-slate-100">
+        {/* <button className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white transition hover:bg-slate-100">
           <Bell size={18} className="text-slate-600" />
           <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500"></span>
-        </button>
+        </button> */}
 
         {/* User */}
         <div className="flex items-center">
