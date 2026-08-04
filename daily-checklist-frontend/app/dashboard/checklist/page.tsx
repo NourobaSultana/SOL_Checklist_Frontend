@@ -133,6 +133,7 @@ export default function ChecklistPage() {
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
+
     y += 7;
     doc.text(
       `Completed: ${completedCount}/${totalCount} (${progress}%)`,
@@ -146,26 +147,25 @@ export default function ChecklistPage() {
     y += 10;
     doc.setDrawColor(200);
     doc.line(marginX, y, 196, y);
+
     y += 8;
 
     doc.setFontSize(11);
-    answers.forEach((answer, index) => {
+
+    answers.forEach((item, index) => {
       if (y > 280) {
         doc.addPage();
         y = 18;
       }
-      answers.forEach((item, index) => {
-        const status = item.answer;
 
-        doc.text(`${index + 1}.`, marginX, y);
-        doc.text(item.question, marginX + 8, y);
-        doc.text(status, 180, y);
+      doc.text(`${index + 1}.`, marginX, y);
+      doc.text(item.question, marginX + 8, y);
+      doc.text(item.answer, 180, y);
 
-        y += 8;
-      });
-
-      doc.save("onboarding-checklist.pdf");
+      y += 8;
     });
+
+    doc.save("onboarding-checklist.pdf");
   };
 
   async function handleSaveQuestion() {

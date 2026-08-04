@@ -33,16 +33,6 @@ export default function Sidebar() {
             icon: ClipboardCheck,
           },
           {
-            title: "History",
-            href: "/admin/history",
-            icon: History,
-          },
-          {
-            title: "Profile",
-            href: "/dashboard/profile",
-            icon: User,
-          },
-          {
             title: "Today's Appointment",
             href: "/dashboard/todaysAppointment",
             icon: ClipboardCheck,
@@ -51,6 +41,16 @@ export default function Sidebar() {
             title: "Today's Expense",
             href: "/dashboard/todaysExpense",
             icon: Receipt,
+          },
+          {
+            title: "History",
+            href: "/admin/history",
+            icon: History,
+          },
+          {
+            title: "Profile",
+            href: "/dashboard/profile",
+            icon: User,
           },
         ]
       : [
@@ -65,16 +65,6 @@ export default function Sidebar() {
             icon: ClipboardCheck,
           },
           {
-            title: "History",
-            href: "/dashboard/history",
-            icon: History,
-          },
-          {
-            title: "Profile",
-            href: "/dashboard/profile",
-            icon: User,
-          },
-          {
             title: "Today's Appointment",
             href: "/dashboard/todaysAppointment",
             icon: ClipboardCheck,
@@ -83,6 +73,16 @@ export default function Sidebar() {
             title: "Today's Expense",
             href: "/dashboard/todaysExpense",
             icon: Receipt,
+          },
+          {
+            title: "History",
+            href: "/dashboard/history",
+            icon: History,
+          },
+          {
+            title: "Profile",
+            href: "/dashboard/profile",
+            icon: User,
           },
         ];
 
