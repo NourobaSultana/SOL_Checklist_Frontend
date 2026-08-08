@@ -1,16 +1,10 @@
-import ProtectedRoute from '@/components/common/ProtectedRoute';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import ProtectedRoute from "@/components/common/ProtectedRoute";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
-export default function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
-      <DashboardLayout>
-        {children}
-      </DashboardLayout>
+      <DashboardLayout>{children}</DashboardLayout>
     </ProtectedRoute>
   );
 }

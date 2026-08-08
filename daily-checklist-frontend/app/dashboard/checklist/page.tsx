@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 import { Question } from "@/types/question";
 import { ChecklistAnswer } from "@/types/checklist";
 import Button from "@/components/ui/Button";
@@ -46,44 +47,45 @@ export default function ChecklistPage() {
   }
 
   async function handleDelete(id: string) {
-    toast.custom((t) => (
-      <div className="w-[360px] rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
-        <h3 className="text-base font-semibold text-slate-800">
-          Delete Question
-        </h3>
+    const result = await Swal.fire({
+      title: "Delete Question?",
+      text: "Are you sure you want to delete this question?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#64748b",
+      reverseButtons: true,
+    });
 
-        <p className="mt-2 text-sm text-slate-500">
-          Are you sure you want to delete this item?
-        </p>
+    if (!result.isConfirmed) {
+      return;
+    }
 
-        <div className="mt-5 flex justify-end gap-3">
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-          >
-            No
-          </button>
+    try {
+      // Same ID — nothing changed
+      await deleteQuestion(id);
 
-          <button
-            onClick={async () => {
-              toast.dismiss(t.id);
+      // Same existing function
+      loadQuestions();
 
-              try {
-                await deleteQuestion(id);
-                loadQuestions();
-
-                toast.success("Question deleted successfully.");
-              } catch {
-                toast.error("Failed to delete question.");
-              }
-            }}
-            className="rounded-xl bg-red-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600"
-          >
-            Yes
-          </button>
-        </div>
-      </div>
-    ));
+      await Swal.fire({
+        title: "Deleted!",
+        text: "Question deleted successfully.",
+        icon: "success",
+        confirmButtonColor: "#ACC822",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch {
+      await Swal.fire({
+        title: "Failed!",
+        text: "Failed to delete question.",
+        icon: "error",
+        confirmButtonColor: "#ef4444",
+      });
+    }
   }
 
   async function handleUpdate() {
@@ -333,7 +335,7 @@ export default function ChecklistPage() {
                   {/* Left */}
                   <div className="flex min-w-0 items-start gap-4">
                     {/* Number */}
-                    <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#ACC822]/15 font-bold text-[#ACC822]">
+                    <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#ACC822]/15 font-bold  text-[#ACC822]">
                       {index + 1}
                     </div>
 
@@ -403,33 +405,22 @@ export default function ChecklistPage() {
               {/* Left */}
               <div className="flex min-w-0 items-start gap-4">
                 {/* Status Icon */}
-                <div
-                  className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl border-2 transition-all sm:h-11 sm:w-11 ${
-                    item.answer === "Yes"
-                      ? "border-[#ACC822] bg-[#ACC822]"
-                      : item.answer === "No"
-                        ? "border-red-500 bg-red-500"
-                        : "border-slate-300 bg-white"
-                  }`}
-                >
-                  {item.answer === "Yes" && (
-                    <FiCheck size={18} className="text-white" />
-                  )}
-
-                  {item.answer === "No" && (
-                    <span className="text-base font-bold text-white">✕</span>
-                  )}
+                {/* number */}
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl border-2 border-slate-300 bg-white sm:h-11 sm:w-11">
+                  <span className="text-base font-semibold text-slate-700 ">
+                    {index + 1}
+                  </span>
                 </div>
 
                 {/* Question */}
                 <div className="min-w-0 flex-1">
-                  <h3 className="break-words text-sm font-semibold leading-6 text-slate-800 sm:text-base lg:text-lg">
+                  <h3
+                    className={`break-words mt-2 text-sm font-semibold leading-6 text-slate-800 sm:text-base lg:text-lg ${
+                      item.answer === "Yes" ? "line-through" : ""
+                    }`}
+                  >
                     {item.question}
                   </h3>
-
-                  <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-                    Question #{index + 1}
-                  </p>
                 </div>
               </div>
 

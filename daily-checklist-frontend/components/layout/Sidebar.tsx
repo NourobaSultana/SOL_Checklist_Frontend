@@ -1,11 +1,12 @@
 "use client";
-
+// import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import {
   LayoutDashboard,
   ClipboardCheck,
+  ClipboardClock,
   History,
   User,
   LogOut,
@@ -15,6 +16,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 
 export default function Sidebar() {
+  // const t = useTranslations("Sidebar");
   const pathname = usePathname();
 
   const { user, logout } = useAuth();
@@ -35,7 +37,7 @@ export default function Sidebar() {
           {
             title: "Today's Appointment",
             href: "/dashboard/todaysAppointment",
-            icon: ClipboardCheck,
+            icon: ClipboardClock,
           },
           {
             title: "Today's Expense",
