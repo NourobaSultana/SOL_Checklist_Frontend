@@ -1,5 +1,5 @@
 "use client";
-// import { useTranslations } from "next-intl";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -14,9 +14,10 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function Sidebar() {
-  // const t = useTranslations("Sidebar");
+  const { dictionary, language, setLanguage } = useLanguage();
   const pathname = usePathname();
 
   const { user, logout } = useAuth();
@@ -25,80 +26,76 @@ export default function Sidebar() {
     user?.role === "admin"
       ? [
           {
-            title: "Dashboard",
+            title: "dashboard",
             href: "/dashboard",
             icon: LayoutDashboard,
           },
           {
-            title: "Today's Checklist",
+            title: "checklist",
             href: "/dashboard/checklist",
             icon: ClipboardCheck,
           },
           {
-            title: "Today's Appointment",
+            title: "appointment",
             href: "/dashboard/todaysAppointment",
             icon: ClipboardClock,
           },
           {
-            title: "Today's Expense",
+            title: "expense",
             href: "/dashboard/todaysExpense",
             icon: Receipt,
           },
           {
-            title: "History",
+            title: "history",
             href: "/admin/history",
             icon: History,
           },
           {
-            title: "Profile",
+            title: "profile",
             href: "/dashboard/profile",
             icon: User,
           },
         ]
       : [
           {
-            title: "Dashboard",
+            title: "dashboard",
             href: "/dashboard",
             icon: LayoutDashboard,
           },
           {
-            title: "Today's Checklist",
+            title: "checklist",
             href: "/dashboard/checklist",
             icon: ClipboardCheck,
           },
           {
-            title: "Today's Appointment",
+            title: "appointment",
             href: "/dashboard/todaysAppointment",
-            icon: ClipboardCheck,
+            icon: ClipboardClock,
           },
           {
-            title: "Today's Expense",
+            title: "expense",
             href: "/dashboard/todaysExpense",
             icon: Receipt,
           },
           {
-            title: "History",
+            title: "history",
             href: "/dashboard/history",
             icon: History,
           },
           {
-            title: "Profile",
+            title: "profile",
             href: "/dashboard/profile",
             icon: User,
           },
         ];
 
   return (
-    <aside className="sticky top-0 flex h-screen w-72 flex-col border-r border-slate-200 bg-white shadow-xl">
+    <aside className="sticky top-0 flex h-screen w-72 flex-col bg-white shadow-xl">
       {/* Logo */}
-      <div className="border-b border-slate-200 bg-gradient-to-br from-[#7C9E1A] via-[#96B51D] to-[#CDEB4B] px-7 py-8">
-        <h2 className="text-3xl font-extrabold tracking-tight text-white">
-          SOL Checklist
-        </h2>
+      <div className="bg-[#ACC822] px-6 py-6 text-white">
+        <h1 className="text-2xl font-bold">{dictionary.menu.logo}</h1>
 
-        <p className="mt-1 text-sm text-lime-100">
-          Daily Productivity Dashboard
-        </p>
+        <p className="mt-1 text-sm text-lime-100">{dictionary.menu.tagline}</p>
       </div>
 
       {/* Navigation */}
@@ -114,7 +111,7 @@ export default function Sidebar() {
               className={`group flex items-center justify-between rounded-2xl px-3 py-2 transition-all duration-300 ${
                 active
                   ? "bg-[#ACC822] text-white shadow-lg"
-                  : "text-slate-600 hover:bg-lime-50 hover:text-[#ACC822] hover:translate-x-1"
+                  : "text-slate-600 hover:translate-x-1 hover:bg-lime-50 hover:text-[#ACC822]"
               }`}
             >
               <div className="flex items-center gap-4">
@@ -128,7 +125,9 @@ export default function Sidebar() {
                   <Icon size={20} />
                 </div>
 
-                <span className="font-medium">{menu.title}</span>
+                <span className="font-medium">
+                  {dictionary.menu[menu.title]}
+                </span>
               </div>
 
               {!active && (
@@ -141,14 +140,27 @@ export default function Sidebar() {
         })}
       </nav>
 
+      {/* Language Button */}
+      <div className="px-5 pb-3">
+        <button
+          type="button"
+          onClick={() => setLanguage(language === "en" ? "bn" : "en")}
+          className="w-full rounded-xl border border-[#ACC822] px-4 py-2 font-medium text-[#ACC822] transition hover:bg-[#ACC822] hover:text-white"
+        >
+          {language === "en" ? "বাংলা" : "English"}
+        </button>
+      </div>
+
       {/* Logout */}
       <div className="border-t border-slate-200 p-5">
         <button
+          type="button"
           onClick={logout}
           className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-red-600 to-red-400 px-5 py-3 font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
         >
           <LogOut size={20} />
-          Logout
+
+          {dictionary.menu.logout}
         </button>
       </div>
     </aside>

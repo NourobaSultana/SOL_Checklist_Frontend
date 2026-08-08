@@ -1,5 +1,5 @@
-import ProtectedRoute from '@/components/common/ProtectedRoute';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import ProtectedRoute from "@/components/common/ProtectedRoute";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
 export default function AdminLayout({
   children,
@@ -8,9 +8,7 @@ export default function AdminLayout({
 }) {
   return (
     <ProtectedRoute>
-      <DashboardLayout>
-        {children}
-      </DashboardLayout>
+      <DashboardLayout>{children}</DashboardLayout>
     </ProtectedRoute>
   );
 }

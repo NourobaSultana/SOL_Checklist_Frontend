@@ -17,8 +17,10 @@ import {
   deleteQuestion,
 } from "@/services/question";
 import { FiCheck, FiDownload, FiTrash2, FiEdit, FiPlus } from "react-icons/fi";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function ChecklistPage() {
+  const { dictionary, language, setLanguage } = useLanguage();
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const [loading, setLoading] = useState(false);
@@ -225,6 +227,7 @@ export default function ChecklistPage() {
     setAnswers(
       data.map((item) => ({
         question: item.question,
+
         answer: "No",
       })),
     );
@@ -247,11 +250,12 @@ export default function ChecklistPage() {
             {/* Text */}
             <div className="min-w-0">
               <h2 className="truncate text-lg font-bold text-slate-800 sm:text-xl lg:text-2xl">
-                Onboarding Checklist
+                {dictionary.checklist.title}
               </h2>
 
               <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-                {completedCount} of {totalCount} tasks completed
+                {completedCount} {dictionary.checklist.middleText} {totalCount}{" "}
+                {dictionary.checklist.tasksCompleted}
               </p>
             </div>
           </div>
@@ -279,7 +283,7 @@ export default function ChecklistPage() {
             >
               <FiDownload size={18} />
 
-              <span>Download PDF</span>
+              <span>{dictionary.checklist.downloadPdf}</span>
             </button>
           </div>
         </div>
@@ -291,16 +295,16 @@ export default function ChecklistPage() {
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
               <h3 className="text-xl font-bold text-slate-800 sm:text-2xl">
-                Manage Questions
+                {dictionary.checklist.manageQuestion}
               </h3>
 
               <p className="mt-1 text-sm text-slate-500">
-                Add, update or remove onboarding checklist questions.
+                {dictionary.checklist.manageQuestionsDescription}
               </p>
             </div>
 
             <div className="w-fit rounded-xl bg-[#ACC822]/10 px-4 py-2 text-sm font-semibold text-[#ACC822]">
-              Total: {questions.length}
+              {dictionary.checklist.total}: {questions.length}
             </div>
           </div>
 
@@ -310,7 +314,7 @@ export default function ChecklistPage() {
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Enter your question..."
+              placeholder={dictionary.checklist.questionPlaceholder}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20"
             />
 
@@ -320,7 +324,9 @@ export default function ChecklistPage() {
             >
               <FiPlus size={18} />
 
-              {editingQuestion ? "Update Question" : "Add Question"}
+              {editingQuestion
+                ? dictionary.checklist.updateQuestion
+                : dictionary.checklist.addQuestion}
             </button>
           </div>
 
@@ -354,7 +360,7 @@ export default function ChecklistPage() {
                       className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-600 transition-all duration-300 hover:bg-blue-500 hover:text-white sm:flex-none"
                     >
                       <FiEdit size={16} />
-                      Edit
+                      {dictionary.checklist.edit}
                     </button>
 
                     <button
@@ -362,7 +368,7 @@ export default function ChecklistPage() {
                       className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 transition-all duration-300 hover:bg-red-500 hover:text-white sm:flex-none"
                     >
                       <FiTrash2 size={16} />
-                      Delete
+                      {dictionary.checklist.delete}
                     </button>
                   </div>
                 </div>
@@ -378,11 +384,11 @@ export default function ChecklistPage() {
               </div>
 
               <h4 className="text-lg font-semibold text-slate-700">
-                No Questions Found
+                {dictionary.checklist.noQuestionsFound}
               </h4>
 
               <p className="mt-2 text-sm text-slate-500">
-                Add your first onboarding question to get started.
+                {dictionary.checklist.addFirstQuestion}
               </p>
             </div>
           )}
@@ -435,7 +441,7 @@ export default function ChecklistPage() {
                       : "border border-slate-300 bg-white text-slate-600 hover:border-[#ACC822] hover:bg-[#ACC822]/10 hover:text-[#ACC822]"
                   }`}
                 >
-                  Yes
+                  {dictionary.checklist.yes}
                 </button>
 
                 {/* NO */}
@@ -447,7 +453,7 @@ export default function ChecklistPage() {
                       : "border border-slate-300 bg-white text-slate-600 hover:border-red-400 hover:bg-red-50 hover:text-red-500"
                   }`}
                 >
-                  No
+                  {dictionary.checklist.no}
                 </button>
               </div>
             </div>
@@ -463,18 +469,17 @@ export default function ChecklistPage() {
 
             {/* Title */}
             <h3 className="text-lg font-bold text-slate-800 sm:text-xl lg:text-2xl">
-              🎉 All Tasks Completed
+              🎉 {dictionary.checklist.allTasksCompleted}
             </h3>
 
             {/* Description */}
             <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500 sm:text-base">
-              Great job! You've completed every checklist item. Your progress
-              has been successfully recorded.
+              {dictionary.checklist.completedDescription}
             </p>
 
             {/* Optional Badge */}
             <div className="mt-6 inline-flex items-center rounded-full bg-[#ACC822]/10 px-4 py-2 text-sm font-semibold text-[#7E9E18]">
-              ✔ 100% Completed
+              ✔ 100% {dictionary.checklist.completed}
             </div>
           </div>
         )}
@@ -485,13 +490,11 @@ export default function ChecklistPage() {
             {/* Left Content */}
             <div className="max-w-2xl">
               <h3 className="text-lg font-bold text-slate-800 sm:text-xl lg:text-2xl">
-                Ready to Submit?
+                {dictionary.checklist.readyToSubmit}
               </h3>
 
               <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
-                Review your checklist, appointments, and expenses before
-                submitting. Once submitted, your progress will be saved for
-                today's report.
+                {dictionary.checklist.submitDescription}
               </p>
             </div>
 
@@ -524,10 +527,10 @@ export default function ChecklistPage() {
                       d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                     />
                   </svg>
-                  Submitting...
+                  {dictionary.checklist.submitting}
                 </>
               ) : (
-                "Submit Checklist"
+                dictionary.checklist.submitChecklist
               )}
             </Button>
           </div>

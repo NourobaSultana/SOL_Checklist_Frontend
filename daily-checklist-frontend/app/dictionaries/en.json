@@ -1,0 +1,109 @@
+{
+  "menu": {
+    "dashboard": "Dashboard",
+    "checklist": "Today's Checklist",
+    "appointment": "Today's Appointment",
+    "expense": "Today's Expense",
+    "history": "History",
+    "profile": "Profile",
+    "logout": "Logout",
+    "tagline": "Daily Productivity Dashboard",
+    "logo": "SOL Checklist"
+  },
+
+  "navbar": {
+    "dashboard": "Dashboard"
+  },
+
+  "dashboard": {
+    "title": "Daily Productivity Dashboard",
+    "description": "Manage your daily checklist, track previous submissions, and stay productive with your personalized dashboard.",
+
+    "checklist": {
+      "title": "Today's Checklist",
+      "description": "Complete your daily checklist and keep your progress updated."
+    },
+
+    "history": {
+      "title": "History",
+      "description": "View, review, and manage all your previous checklist submissions."
+    }
+  },
+
+  "checklist": {
+    "title": "Onboarding Checklist",
+    "middleText": "of",
+    "tasksCompleted": "tasks completed",
+
+    "downloadPdf": "Download PDF",
+
+    "manageQuestions": "Manage Questions",
+    "manageQuestionsDescription": "Add, update or remove onboarding checklist questions.",
+    "total": "Total",
+
+    "questionPlaceholder": "Enter your question...",
+    "updateQuestion": "Update Question",
+    "addQuestion": "Add Question",
+
+    "edit": "Edit",
+    "delete": "Delete",
+
+    "noQuestionsFound": "No Questions Found",
+    "addFirstQuestion": "Add your first onboarding question to get started.",
+
+    "yes": "Yes",
+    "no": "No",
+
+    "allTasksCompleted": "All Tasks Completed",
+    "completedDescription": "Great job! You've completed every checklist item. Your progress has been successfully recorded.",
+    "completed": "Completed",
+
+    "readyToSubmit": "Ready to Submit?",
+    "submitDescription": "Review your checklist, appointments, and expenses before submitting. Once submitted, your progress will be saved for today's report.",
+
+    "submitting": "Submitting...",
+    "submitChecklist": "Submit Checklist"
+  },
+
+  "appointment": {
+    "title": "Today's Appointment",
+    "description": "Add your meeting or appointment details.",
+    "placeholder": "Write today's appointments..."
+  },
+
+  "submit": {
+    "title": "Ready to Submit?",
+    "description": "Review your checklist, appointments, and expenses before submitting. Once submitted, your progress will be saved for today's report.",
+    "submitting": "Submitting...",
+    "button": "Submit Checklist"
+  },
+
+  "expense": {
+    "todaysExpense": "Today's Expense",
+    "expenseDescription": "Record today's expenses and keep your daily spending organized.",
+    "expensePlaceholder": "Write today's expenses..."
+  },
+
+  "history": {
+    "title": "All Checklist History",
+    "description": "Review and manage all submitted checklists.",
+    "total": "Total",
+    "checklistDetails": "Checklist Details",
+    "date": "Date",
+    "appointment": "Appointment",
+    "dailyExpense": "Daily Expense",
+    "checklistItems": "Checklist Items"
+  },
+
+  "profile": {
+    "changePassword": "Change Password",
+    "changePasswordDescription": "Update your password to keep your account secure.",
+    "currentPassword": "Current Password",
+    "currentPasswordPlaceholder": "Enter current password",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm new password",
+    "updatePassword": "Update Password"
+  }
+}

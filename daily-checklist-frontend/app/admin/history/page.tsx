@@ -5,8 +5,10 @@ import { Checklist } from "@/types/checklist";
 import Loader from "@/components/ui/Loader";
 import HistoryTable from "@/components/admin/HistoryTable";
 import { getAllChecklistHistory } from "@/services/admin";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function AdminHistoryPage() {
+  const { dictionary, language, setLanguage } = useLanguage();
   const [history, setHistory] = useState<Checklist[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedChecklist, setSelectedChecklist] = useState<any>(null);
@@ -29,6 +31,15 @@ export default function AdminHistoryPage() {
   if (loading) {
     return <Loader />;
   }
+  // "history": {
+  //   "description": "Review and manage all submitted checklists.",
+  //   "total": "Total",
+  //   "checklistDetails": "Checklist Details",
+  //   "date": "Date",
+  //   "appointment": "Appointment",
+  //   "dailyExpense": "Daily Expense",
+  //   "checklistItems": "Checklist Items"
+  // }
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 lg:p-8">
@@ -36,16 +47,16 @@ export default function AdminHistoryPage() {
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
-            All Checklist History
+            {dictionary.history.title}
           </h1>
 
           <p className="mt-2 text-sm text-slate-500 sm:text-base">
-            Review and manage all submitted checklists.
+            {dictionary.history.description}
           </p>
         </div>
 
         <div className="w-fit rounded-xl bg-[#ACC822]/10 px-4 py-2 text-sm font-semibold text-[#ACC822]">
-          Total: {history.length}
+          {dictionary.history.total}: {history.length}
         </div>
       </div>
 
@@ -75,7 +86,9 @@ export default function AdminHistoryPage() {
                   {selectedChecklist.title}
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-500">Checklist Details</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  {dictionary.history.checklistDetails}
+                </p>
               </div>
 
               <button
@@ -91,7 +104,9 @@ export default function AdminHistoryPage() {
               {/* Info */}
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="rounded-xl bg-slate-50 p-4">
-                  <p className="text-sm text-slate-500">Date</p>
+                  <p className="text-sm text-slate-500">
+                    {dictionary.history.date}
+                  </p>
 
                   <p className="mt-1 font-semibold text-slate-800">
                     {new Date(selectedChecklist.createdAt).toLocaleDateString()}

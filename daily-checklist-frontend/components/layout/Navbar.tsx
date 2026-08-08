@@ -1,8 +1,10 @@
 "use client";
 import { Bell, Menu } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function Navbar() {
+  const { dictionary, language, setLanguage } = useLanguage();
   const { user } = useAuth();
 
   return (
@@ -16,7 +18,7 @@ export default function Navbar() {
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#ACC822] sm:text-sm">
-            Dashboard
+            {dictionary.navbar.dashboard}
           </p>
         </div>
       </div>

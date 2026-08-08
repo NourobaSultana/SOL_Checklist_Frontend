@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowRight, ClipboardList, History } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function DashboardPage() {
+  const { dictionary, language, setLanguage } = useLanguage();
   const { user } = useAuth();
 
   return (
@@ -12,12 +14,11 @@ export default function DashboardPage() {
       {/* Hero Section */}
       <div className="overflow-hidden rounded-2xl bg-gradient-to-r from-[#96B51D] via-[#ACC822] to-[#D6EE5B] p-5 text-white shadow-[0_20px_50px_rgba(172,200,34,0.35)] sm:rounded-3xl sm:p-8 lg:p-10">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
-          Welcome Back
+          {dictionary.dashboard.title}
         </h1>
 
         <p className="mt-3 max-w-2xl text-sm leading-6 text-blue-100 sm:text-base lg:text-lg">
-          Manage your daily checklist, track previous submissions, and stay
-          productive with your personalized dashboard.
+          {dictionary.dashboard.description}
         </p>
       </div>
 
@@ -40,11 +41,11 @@ export default function DashboardPage() {
           </div>
 
           <h2 className="mt-5 text-xl font-semibold text-slate-800 sm:text-2xl">
-            Today's Checklist
+            {dictionary.dashboard.checklist.title}
           </h2>
 
           <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base">
-            Complete your daily checklist and keep your progress updated.
+            {dictionary.dashboard.checklist.description}
           </p>
         </Link>
 
@@ -67,11 +68,11 @@ export default function DashboardPage() {
           </div>
 
           <h2 className="mt-5 text-xl font-semibold text-slate-800 sm:text-2xl">
-            History
+            {dictionary.dashboard.history.title}
           </h2>
 
           <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base">
-            View, review, and manage all your previous checklist submissions.
+            {dictionary.dashboard.history.description}
           </p>
         </Link>
       </div>

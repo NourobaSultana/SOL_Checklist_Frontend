@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { User } from "@/types/user";
 import { getProfile } from "@/services/users";
 import { changePassword } from "@/services/users";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function ProfilePage() {
+  const { dictionary, language, setLanguage } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -83,11 +85,11 @@ export default function ProfilePage() {
         <div className="p-5 sm:p-6 lg:p-8">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-slate-800 sm:text-2xl">
-              Change Password
+              {dictionary.profile.changePassword}
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              Update your password to keep your account secure.
+              {dictionary.profile.changePasswordDescription}
             </p>
           </div>
 
@@ -95,12 +97,12 @@ export default function ProfilePage() {
             {/* Current Password */}
             <div>
               <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Current Password
+                {dictionary.profile.currentPassword}
               </label>
 
               <input
                 type="password"
-                placeholder="Enter current password"
+                placeholder={dictionary.profile.currentPasswordPlaceholder}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition-all duration-300 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20"
@@ -110,12 +112,12 @@ export default function ProfilePage() {
             {/* New Password */}
             <div>
               <label className="mb-2 block text-sm font-semibold text-slate-700">
-                New Password
+                {dictionary.profile.newPassword}
               </label>
 
               <input
                 type="password"
-                placeholder="Enter new password"
+                placeholder={dictionary.profile.newPasswordPlaceholder}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition-all duration-300 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20"
@@ -125,12 +127,12 @@ export default function ProfilePage() {
             {/* Confirm Password */}
             <div>
               <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Confirm Password
+                {dictionary.profile.confirmPassword}
               </label>
 
               <input
                 type="password"
-                placeholder="Confirm new password"
+                placeholder={dictionary.profile.confirmPasswordPlaceholder}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition-all duration-300 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20"
@@ -143,7 +145,8 @@ export default function ProfilePage() {
                 onClick={handleChangePassword}
                 className="w-full rounded-2xl bg-[#ACC822] px-6 py-3 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#96B51D] hover:shadow-lg sm:w-auto"
               >
-                Update Password
+                {" "}
+                {dictionary.profile.updatePassword}
               </button>
             </div>
           </div>

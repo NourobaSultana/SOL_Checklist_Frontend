@@ -1,4 +1,5 @@
 "use client";
+import { useLanguage } from "@/app/context/LanguageContext";
 import Button from "@/components/ui/Button";
 import { submitChecklist } from "@/services/checklist";
 import { ChecklistAnswer, CreateChecklistDto } from "@/types/checklist";
@@ -8,6 +9,7 @@ import toast from "react-hot-toast";
 import { FiDownload } from "react-icons/fi";
 
 export default function page() {
+  const { dictionary, language, setLanguage } = useLanguage();
   const [appointment, setAppointment] = useState("");
   const [DailyExpanse, setDailyExpanse] = useState("");
   const [loading, setLoading] = useState(false);
@@ -165,11 +167,11 @@ export default function page() {
             {/* Title */}
             <div className="min-w-0">
               <h3 className="text-base font-bold text-slate-800 sm:text-lg lg:text-xl">
-                Today's Appointment
+                {dictionary.appointment.title}
               </h3>
 
               <p className="mt-1 text-xs leading-5 text-slate-500 sm:text-sm">
-                Add your meeting or appointment details.
+                {dictionary.appointment.description}
               </p>
             </div>
           </div>
@@ -179,7 +181,7 @@ export default function page() {
             value={appointment}
             onChange={(e) => setAppointment(e.target.value)}
             rows={6}
-            placeholder="Write today's appointments..."
+            placeholder={dictionary.appointment.placeholder}
             className="min-h-[160px] w-full resize-y rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20 sm:p-4 sm:text-base"
           />
         </div>
@@ -190,13 +192,11 @@ export default function page() {
           {/* Left Content */}
           <div className="max-w-2xl">
             <h3 className="text-lg font-bold text-slate-800 sm:text-xl lg:text-2xl">
-              Ready to Submit?
+              {dictionary.submit.title}
             </h3>
 
             <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
-              Review your checklist, appointments, and expenses before
-              submitting. Once submitted, your progress will be saved for
-              today's report.
+              {dictionary.submit.description}
             </p>
           </div>
 
@@ -229,10 +229,10 @@ export default function page() {
                     d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                   />
                 </svg>
-                Submitting...
+                {dictionary.submit.submitting}
               </>
             ) : (
-              "Submit Checklist"
+              dictionary.submit.button
             )}
           </Button>
         </div>
