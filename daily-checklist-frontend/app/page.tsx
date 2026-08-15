@@ -8,10 +8,10 @@ export default function Home() {
       <div className="w-full max-w-md text-center">
         {/* Logo / Brand */}
         <div className="mb-10">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#96b51d]  shadow-lg shadow-indigo-200">
-            <span className="text-2xl font-bold text-white">D</span>
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#96b51d] shadow-lg shadow-[#96b51d]/30">
+            <span className="text-xl font-bold text-white">S</span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
             Welcome to Sol-Checklist
           </h1>
           <p className="mt-2 text-sm text-gray-500">
@@ -20,22 +20,22 @@ export default function Home() {
         </div>
 
         {/* Card */}
-        <div className="rounded-3xl bg-white p-8 shadow-2xl border border-gray-100">
-          <p className="text-sm text-gray-500 mb-6">
+        <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-2xl">
+          <p className="mb-6 text-sm text-gray-500">
             Get started by signing in or creating a new account
           </p>
 
           <div className="space-y-3">
             <Link
               href="/login"
-              className="block w-full rounded-xl bg-[#96b51d]  py-3 text-white font-semibold transition-all duration-300 hover:bg-[#] hover:shadow-lg hover:scale-[1.02] active:scale-95"
+              className="block w-full rounded-xl bg-[#96b51d] py-3 font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-[#84a018] focus:outline-none focus:ring-2 focus:ring-[#96b51d] focus:ring-offset-2"
             >
               Login to your account
             </Link>
 
             <Link
               href="/register"
-              className="block w-full rounded-xl border border-[#96b51d] py-3 text-gray-700 font-semibold transition-all duration-300 hover:border-[#96b51d] hover:text-[#96b51d] hover:scale-[1.02] active:scale-95"
+              className="block w-full rounded-xl border border-gray-200 py-3 font-semibold text-gray-700 transition-colors duration-200 hover:border-[#96b51d] hover:text-[#96b51d] focus:outline-none focus:ring-2 focus:ring-[#96b51d] focus:ring-offset-2"
             >
               Create a new account
             </Link>
@@ -44,7 +44,8 @@ export default function Home() {
 
         {/* Footer */}
         <p className="mt-8 text-xs text-gray-400">
-          © {new Date().getFullYear()} Your Sol-Checklist. All rights reserved.
+          &copy; {new Date().getFullYear()} Solutya Pvt. Ltd. All rights
+          reserved.
         </p>
       </div>
     </div>

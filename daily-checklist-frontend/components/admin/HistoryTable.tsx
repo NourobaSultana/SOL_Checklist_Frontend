@@ -1,5 +1,3 @@
-import { downloadChecklistPdf } from "@/app/utils/downloadChecklistPdf";
-
 interface Props {
   history: any[];
   onView: (item: any) => void;
@@ -57,13 +55,6 @@ export default function HistoryTable({ history, onView }: Props) {
                 className="flex-1 rounded-xl bg-[#ACC822] py-3 text-sm font-semibold text-white transition hover:bg-[#96B51D]"
               >
                 👁 View
-              </button>
-
-              <button
-                onClick={() => downloadChecklistPdf(item)}
-                className="flex-1 rounded-xl border border-[#ACC822] py-3 text-sm font-semibold text-[#ACC822] transition hover:bg-[#ACC822] hover:text-white"
-              >
-                📄 PDF
               </button>
             </div>
           </div>
@@ -137,13 +128,6 @@ export default function HistoryTable({ history, onView }: Props) {
                       className="rounded-xl bg-[#ACC822] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#96B51D]"
                     >
                       👁 View
-                    </button>
-
-                    <button
-                      onClick={() => downloadChecklistPdf(item)}
-                      className="rounded-xl border border-[#ACC822] px-4 py-2 text-sm font-medium text-[#ACC822] transition hover:bg-[#ACC822] hover:text-white"
-                    >
-                      📄 PDF
                     </button>
                   </div>
                 </td>

@@ -102,29 +102,93 @@ export default function ChecklistPage() {
     toast.success("Question updated");
   }
 
-  const [appointment, setAppointment] = useState("");
-
   const [DailyExpanse, setDailyExpanse] = useState("");
 
-  const [answers, setAnswers] = useState<ChecklistAnswer[]>([]);
+  const [answers, setAnswers] = useState(
+    questions.map((question) => ({
+      question: question.question,
+      answers: "No",
+    })),
+  );
 
   const handleEdit = (question: any) => {
     setEditingQuestion(question);
     setQuestion(question.question);
   };
 
-  const completedCount = answers.filter((i) => i.answer === "Yes").length;
+  const [lockedAnswers, setLockedAnswers] = useState<boolean[]>(
+    questions.map(() => false),
+  );
+
+  const completedCount = answers.filter((i) => i.answers === "Yes").length;
   const totalCount = answers.length;
   const progress =
     totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
-  function changeAnswer(index: number, value: "Yes" | "No") {
-    const updated = [...answers];
+  const changeAnswer = (index: number, answer: "Yes" | "No") => {
+    // Already confirmed হলে আর change করা যাবে না
+    if (lockedAnswers[index]) {
+      return;
+    }
 
-    updated[index].answer = value;
+    toast.custom(
+      (t) => (
+        <div className="flex w-full max-w-sm flex-col gap-4 rounded-2xl bg-white p-5 shadow-xl">
+          <div>
+            <h3 className="font-semibold text-slate-800">Are you sure?</h3>
 
-    setAnswers(updated);
-  }
+            <p className="mt-1 text-sm text-slate-500">
+              You selected <b>{answer}</b>. You cannot change this answer later.
+            </p>
+          </div>
+
+          <div className="flex justify-end gap-3">
+            {/* Cancel */}
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600"
+            >
+              No
+            </button>
+
+            {/* Confirm */}
+            <button
+              onClick={() => {
+                // Change answer
+                setAnswers((prev) => {
+                  const updated = [...prev];
+
+                  updated[index] = {
+                    ...updated[index],
+                    answers,
+                  };
+
+                  return updated;
+                });
+
+                // LOCK THIS QUESTION
+                setLockedAnswers((prev) => {
+                  const updated = [...prev];
+                  updated[index] = true;
+                  return updated;
+                });
+
+                toast.dismiss(t.id);
+
+                toast.success(`${answer} selected and locked.`);
+              }}
+              className="rounded-xl bg-[#ACC822] px-4 py-2 text-sm font-semibold text-white"
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: Infinity,
+      },
+    );
+  };
 
   const handleDownloadPdf = () => {
     const doc = new jsPDF();
@@ -164,7 +228,7 @@ export default function ChecklistPage() {
 
       doc.text(`${index + 1}.`, marginX, y);
       doc.text(item.question, marginX + 8, y);
-      doc.text(item.answer, 180, y);
+      doc.text(item.answers, 180, y);
 
       y += 8;
     });
@@ -195,23 +259,29 @@ export default function ChecklistPage() {
     }
   }
 
-  async function handleSubmit() {
+  const handleSubmit = async () => {
+    const unanswered = answers.some((item) => !item.answer);
+
+    if (unanswered) {
+      toast.error("Please answer all questions before submitting.");
+      return;
+    }
+
     try {
       setLoading(true);
 
       await submitChecklist({
         answers,
-        appointment,
-        DailyExpanse,
       });
 
-      toast.success("Checklist submitted successfully.");
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message ?? "Submission failed.");
+      toast.success("Checklist submitted successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to submit checklist.");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     loadQuestions();
@@ -263,7 +333,7 @@ export default function ChecklistPage() {
           {/* Right */}
           <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-center xl:w-auto">
             {/* Progress */}
-            <div className="flex w-full items-center gap-3 lg:max-w-sm">
+            <div className="flex w-full items-center gap-3 lg:w-[400px]">
               <div className="h-3 flex-1 overflow-hidden rounded-full bg-slate-200">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-[#ACC822] via-lime-500 to-green-500 transition-all duration-700"
@@ -275,16 +345,6 @@ export default function ChecklistPage() {
                 {progress}%
               </span>
             </div>
-
-            {/* Download */}
-            <button
-              onClick={handleDownloadPdf}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#ACC822] px-5 py-3 text-sm font-semibold text-white shadow transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#96B51D] hover:shadow-lg sm:w-auto"
-            >
-              <FiDownload size={18} />
-
-              <span>{dictionary.checklist.downloadPdf}</span>
-            </button>
           </div>
         </div>
       </div>
@@ -434,11 +494,14 @@ export default function ChecklistPage() {
               <div className="flex w-full flex-col gap-3 sm:flex-row xl:w-auto">
                 {/* YES */}
                 <button
+                  disabled={lockedAnswers[index]}
                   onClick={() => changeAnswer(index, "Yes")}
                   className={`flex h-11 flex-1 items-center justify-center rounded-xl px-6 text-sm font-semibold transition-all duration-300 sm:h-12 sm:flex-none ${
                     item.answer === "Yes"
                       ? "bg-[#ACC822] text-white shadow-lg"
-                      : "border border-slate-300 bg-white text-slate-600 hover:border-[#ACC822] hover:bg-[#ACC822]/10 hover:text-[#ACC822]"
+                      : lockedAnswers[index]
+                        ? "cursor-not-allowed bg-slate-100 text-slate-400"
+                        : "border border-slate-300 bg-white text-slate-600 hover:border-[#ACC822] hover:bg-[#ACC822]/10 hover:text-[#ACC822]"
                   }`}
                 >
                   {dictionary.checklist.yes}
@@ -446,11 +509,14 @@ export default function ChecklistPage() {
 
                 {/* NO */}
                 <button
+                  disabled={lockedAnswers[index]}
                   onClick={() => changeAnswer(index, "No")}
                   className={`flex h-11 flex-1 items-center justify-center rounded-xl px-6 text-sm font-semibold transition-all duration-300 sm:h-12 sm:flex-none ${
                     item.answer === "No"
                       ? "bg-red-500 text-white shadow-lg"
-                      : "border border-slate-300 bg-white text-slate-600 hover:border-red-400 hover:bg-red-50 hover:text-red-500"
+                      : lockedAnswers[index]
+                        ? "cursor-not-allowed bg-slate-100 text-slate-400"
+                        : "border border-slate-300 bg-white text-slate-600 hover:border-red-400 hover:bg-red-50 hover:text-red-500"
                   }`}
                 >
                   {dictionary.checklist.no}

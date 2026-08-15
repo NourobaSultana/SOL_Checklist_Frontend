@@ -1,22 +1,22 @@
 "use client";
+
 import { useLanguage } from "@/app/context/LanguageContext";
 import Button from "@/components/ui/Button";
-import { submitChecklist } from "@/services/checklist";
-import { ChecklistAnswer, CreateChecklistDto } from "@/types/checklist";
+import { createDailyExpanse } from "@/services/dailyexpanse";
 import jsPDF from "jspdf";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FiDownload } from "react-icons/fi";
 
-export default function page() {
-  const { dictionary, language, setLanguage } = useLanguage();
-  const [appointment, setAppointment] = useState("");
-  const [DailyExpanse, setDailyExpanse] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [answers, setAnswers] = useState<ChecklistAnswer[]>([]);
-  const completedCount = answers.filter((item) => item.answer === "Yes").length;
+export default function Page() {
+  const { dictionary } = useLanguage();
 
-  const totalCount = answers.length;
+  const [dailyExpanse, setDailyExpanse] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // ==========================
+  // Download PDF
+  // ==========================
   const handleDownloadPdf = () => {
     const doc = new jsPDF();
 
@@ -26,84 +26,54 @@ export default function page() {
     const marginX = 14;
     let y = 28;
 
-    // ==========================
     // Header
-    // ==========================
-    doc.setFillColor(172, 200, 34); // #ACC822
+    doc.setFillColor(172, 200, 34);
     doc.rect(0, 0, pageWidth, 18, "F");
 
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.text("Onboarding Checklist", marginX, 11);
+
+    doc.text("Today's Expense", marginX, 11);
 
     doc.setTextColor(0, 0, 0);
 
-    // -------------------------
-    // Daily Expense
-    // -------------------------
+    // Generated time
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    doc.text(`Generated: ${new Date().toLocaleString()}`, marginX, y);
+
+    // Expense
+    y += 15;
+
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
+
     doc.text("Today's Expense:", marginX, y);
-
-    doc.setFont("helvetica", "normal");
-    y += 7;
-
-    doc.text(
-      DailyExpanse?.trim() ? DailyExpanse : "No expense added",
-      marginX,
-      y,
-    );
-
-    // Divider
-    y += 10;
-    doc.line(marginX, y, 196, y);
-
-    // -------------------------
-    // Checklist
-    // -------------------------
-    y += 10;
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Checklist", marginX, y);
 
     y += 8;
 
     doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
 
-    answers.forEach((item, index) => {
-      if (y > 280) {
-        doc.addPage();
+    const expenseText = dailyExpanse.trim() ? dailyExpanse : "No expense added";
 
-        // Header for new page
-        doc.setFillColor(172, 200, 34);
-        doc.rect(0, 0, pageWidth, 18, "F");
+    const wrappedText = doc.splitTextToSize(
+      expenseText,
+      pageWidth - marginX * 2,
+    );
 
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(16);
-        doc.setFont("helvetica", "bold");
-        doc.text("Onboarding Checklist", marginX, 11);
+    doc.text(wrappedText, marginX, y);
 
-        doc.setTextColor(0, 0, 0);
-
-        y = 28;
-      }
-
-      doc.text(`${index + 1}. ${item.question}`, marginX, y);
-      doc.text(item.answer, 180, y);
-
-      y += 8;
-    });
-
-    // ==========================
-    // Footer (All Pages)
-    // ==========================
+    // Footer
     const totalPages = doc.getNumberOfPages();
 
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);
 
       doc.setDrawColor(220);
+
       doc.line(14, pageHeight - 14, pageWidth - 14, pageHeight - 14);
 
       doc.setFontSize(9);
@@ -116,28 +86,39 @@ export default function page() {
       });
     }
 
-    doc.save("today-checklist.pdf");
+    doc.save("today-expense.pdf");
   };
-  async function handleSubmit() {
+
+  // ==========================
+  // Save Expense
+  // ==========================
+  async function handleSaveExpense() {
+    if (!dailyExpanse.trim()) {
+      toast.error("Please enter today's expense.");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      await submitChecklist({
-        answers,
-        appointment,
-        DailyExpanse,
+      await createDailyExpanse({
+        DailyExpanse: dailyExpanse.trim(),
       });
 
-      toast.success("Checklist submitted successfully.");
+      toast.success("Today's expense saved successfully.");
+
+      setDailyExpanse("");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message ?? "Submission failed.");
+      toast.error(
+        error?.response?.data?.message ?? "Failed to save today's expense.",
+      );
     } finally {
       setLoading(false);
     }
   }
+
   return (
     <div>
-      {" "}
       {/* Top Action */}
       <div className="mb-6 flex justify-center sm:justify-end">
         <button
@@ -148,18 +129,16 @@ export default function page() {
           <span>Download PDF</span>
         </button>
       </div>
-      {/* Appointment & Expense */}
-      <div className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-1">
-        {/* Expense */}
+
+      {/* Expense Card */}
+      <div className="mt-8 grid grid-cols-1 gap-6">
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:rounded-3xl sm:p-6 lg:p-8">
           {/* Header */}
           <div className="mb-5 flex items-start gap-3 sm:items-center sm:gap-4">
-            {/* Icon */}
             <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-xl sm:h-12 sm:w-12 sm:text-2xl lg:h-14 lg:w-14">
               💰
             </div>
 
-            {/* Title */}
             <div className="min-w-0">
               <h3 className="text-base font-bold text-slate-800 sm:text-lg lg:text-xl">
                 {dictionary.expense.todaysExpense}
@@ -173,63 +152,50 @@ export default function page() {
 
           {/* Textarea */}
           <textarea
-            value={DailyExpanse}
+            value={dailyExpanse}
             onChange={(e) => setDailyExpanse(e.target.value)}
             rows={6}
             placeholder={dictionary.expense.expensePlaceholder}
             className="min-h-[160px] w-full resize-y rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#ACC822] focus:bg-white focus:ring-4 focus:ring-[#ACC822]/20 sm:p-4 sm:text-base"
           />
-        </div>
-      </div>
-      {/* Submit Section */}
-      <div className="mt-8 rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 via-white to-lime-50 p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:rounded-3xl sm:p-6 lg:p-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          {/* Left Content */}
-          <div className="max-w-2xl">
-            <h3 className="text-lg font-bold text-slate-800 sm:text-xl lg:text-2xl">
-              {dictionary.submit.title}
-            </h3>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
-              {dictionary.submit.description}
-            </p>
+          {/* Save Expense Button */}
+          <div className="mt-6 flex justify-end">
+            <Button
+              onClick={handleSaveExpense}
+              disabled={loading}
+              className="flex w-full items-center justify-center rounded-2xl bg-[#ACC822] px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#96B51D] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:px-8 sm:py-4 sm:text-base"
+            >
+              {loading ? (
+                <>
+                  <svg
+                    className="mr-2 h-5 w-5 animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 014-4H4z"
+                    />
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                "Save Expense"
+              )}
+            </Button>
           </div>
-
-          {/* Submit Button */}
-          <Button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="flex w-full items-center justify-center rounded-2xl bg-[#ACC822] px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#96B51D] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60 sm:px-8 sm:py-4 sm:text-base lg:w-auto lg:min-w-[220px]"
-          >
-            {loading ? (
-              <>
-                <svg
-                  className="mr-2 h-5 w-5 animate-spin"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                  />
-                </svg>
-                {dictionary.submit.submitting}
-              </>
-            ) : (
-              dictionary.submit.button
-            )}
-          </Button>
         </div>
       </div>
     </div>
