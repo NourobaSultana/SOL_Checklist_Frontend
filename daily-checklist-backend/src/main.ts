@@ -10,10 +10,7 @@ import { AppModule } from './app.module';
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 async function bootstrap() {
-  const app =
-    await NestFactory.create<NestExpressApplication>(
-      AppModule,
-    );
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const config = app.get(ConfigService);
 
@@ -28,19 +25,14 @@ async function bootstrap() {
   );
 
   // Serve uploaded files
-  app.useStaticAssets(
-    join(__dirname, '..', 'uploads'),
-    {
-      prefix: '/uploads/',
-    },
-  );
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
 
   await app.listen(config.get<number>('PORT') || 5000);
 
   console.log(
-    `Server running on http://localhost:${
-      config.get<number>('PORT') || 5000
-    }`,
+    `Server running on http://localhost:${config.get<number>('PORT') || 5000}`,
   );
 }
 

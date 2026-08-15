@@ -29,71 +29,41 @@ import { UserRole } from '../common/enums/role.enum';
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   // ==================================
   // MY PROFILE
   // ==================================
-  @Roles(
-    UserRole.ADMIN,
-    UserRole.SUB_ADMIN,
-    UserRole.USER,
-  )
- @Get('profile')
-getProfile(@Req() req: any) {
-  console.log('✅ GET PROFILE ROUTE');
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN, UserRole.USER)
+  @Get('profile')
+  getProfile(@Req() req: any) {
+    console.log('✅ GET PROFILE ROUTE');
 
-  return this.usersService.getProfile(req.user.userId);
-}
+    return this.usersService.getProfile(req.user.userId);
+  }
 
   // ==================================
   // UPDATE PROFILE
   // ==================================
-  @Roles(
-    UserRole.ADMIN,
-    UserRole.SUB_ADMIN,
-    UserRole.USER,
-  )
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN, UserRole.USER)
   @Patch('profile')
-  updateProfile(
-    @Req() req: any,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return this.usersService.updateProfile(
-      req.user.userId,
-      updateUserDto,
-    );
+  updateProfile(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateProfile(req.user.userId, updateUserDto);
   }
 
   // ==================================
   // CHANGE PASSWORD
   // ==================================
-  @Roles(
-    UserRole.ADMIN,
-    UserRole.SUB_ADMIN,
-    UserRole.USER,
-  )
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN, UserRole.USER)
   @Patch('change-password')
-  changePassword(
-    @Req() req: any,
-    @Body() dto: ChangePasswordDto,
-  ) {
-    return this.usersService.changePassword(
-      req.user.userId,
-      dto,
-    );
+  changePassword(@Req() req: any, @Body() dto: ChangePasswordDto) {
+    return this.usersService.changePassword(req.user.userId, dto);
   }
 
   // ==================================
   // UPLOAD PROFILE IMAGE
   // ==================================
-  @Roles(
-    UserRole.ADMIN,
-    UserRole.SUB_ADMIN,
-    UserRole.USER,
-  )
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN, UserRole.USER)
   @Patch('avatar')
   @UseInterceptors(
     FileInterceptor('avatar', {
@@ -112,14 +82,8 @@ getProfile(@Req() req: any) {
       }),
     }),
   )
-  uploadAvatar(
-    @Req() req: any,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    return this.usersService.uploadAvatar(
-      req.user.userId,
-      file,
-    );
+  uploadAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
+    return this.usersService.uploadAvatar(req.user.userId, file);
   }
 
   // ==================================
@@ -136,16 +100,13 @@ getProfile(@Req() req: any) {
   // GET USER BY ID
   // ADMIN & SUB ADMIN
   // ==================================
-  @Roles(
-    UserRole.ADMIN,
-    UserRole.SUB_ADMIN,
-  )
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
   @Get(':id')
-findById(@Param('id') id: string) {
-  console.log('❌ FIND BY ID:', id);
+  findById(@Param('id') id: string) {
+    console.log('❌ FIND BY ID:', id);
 
-  return this.usersService.findById(id);
-}
+    return this.usersService.findById(id);
+  }
 
   // ==================================
   // UPDATE USER ROLE
@@ -157,10 +118,7 @@ findById(@Param('id') id: string) {
     @Param('id') id: string,
     @Body() updateRoleDto: UpdateRoleDto,
   ) {
-    return this.usersService.updateUserRole(
-      id,
-      updateRoleDto.role,
-    );
+    return this.usersService.updateUserRole(id, updateRoleDto.role);
   }
 
   // ==================================
@@ -169,14 +127,11 @@ findById(@Param('id') id: string) {
   // ==================================
   @Roles(UserRole.ADMIN)
   @Delete(':id')
-  async deleteUser(
-    @Param('id') id: string,
-  ) {
+  async deleteUser(@Param('id') id: string) {
     await this.usersService.deleteUser(id);
 
     return {
-      message:
-        'User deleted successfully',
+      message: 'User deleted successfully',
     };
   }
 }

@@ -25,11 +25,4 @@ export class CreateChecklistDto {
   @Type(() => ChecklistAnswerDto)
   answers: ChecklistAnswerDto[];
 
-  @IsOptional()
-  @IsString()
-  appointment?: string;
-
-  @IsOptional()
-  @IsString()
-  DailyExpanse: string;
 }

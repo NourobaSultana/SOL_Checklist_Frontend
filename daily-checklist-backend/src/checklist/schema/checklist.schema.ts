@@ -19,8 +19,7 @@ export class ChecklistAnswer {
   answer: string;
 }
 
-const ChecklistAnswerSchema =
-  SchemaFactory.createForClass(ChecklistAnswer);
+const ChecklistAnswerSchema = SchemaFactory.createForClass(ChecklistAnswer);
 
 @Schema({
   timestamps: true,
@@ -33,11 +32,11 @@ export class Checklist {
   })
   user: Types.ObjectId;
 
-    @Prop({
+  @Prop({
     type: Date,
     required: true,
-    })
-    checklistDate: Date;
+  })
+  checklistDate: Date;
 
   @Prop({
     type: [ChecklistAnswerSchema],
@@ -45,17 +44,6 @@ export class Checklist {
   })
   answers: ChecklistAnswer[];
 
-  @Prop({
-    default: '',
-    trim: true,
-  })
-  appointment: string;
-
-  @Prop({
-    default:'',
-  })
-  DailyExpanse: string;
 }
 
-export const ChecklistSchema =
-  SchemaFactory.createForClass(Checklist);
+export const ChecklistSchema = SchemaFactory.createForClass(Checklist);

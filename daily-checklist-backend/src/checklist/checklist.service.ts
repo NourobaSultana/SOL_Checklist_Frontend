@@ -20,10 +20,7 @@ export class ChecklistService {
   // ==========================================
   // Submit Daily Checklist
   // ==========================================
-  async create(
-    userId: string,
-    createChecklistDto: CreateChecklistDto,
-  ) {
+  async create(userId: string, createChecklistDto: CreateChecklistDto) {
     const today = new Date();
 
     const startOfDay = new Date(today);
@@ -41,9 +38,7 @@ export class ChecklistService {
     });
 
     if (alreadySubmitted) {
-      throw new BadRequestException(
-        'You already submitted today checklist.',
-      );
+      throw new BadRequestException('You already submitted today checklist.');
     }
 
     const checklist = await this.checklistModel.create({
@@ -53,9 +48,6 @@ export class ChecklistService {
 
       answers: createChecklistDto.answers,
 
-      appointment: createChecklistDto.appointment ?? '',
-
-      DailyExpanse: createChecklistDto.DailyExpanse ?? '',
     });
 
     return {
@@ -65,7 +57,7 @@ export class ChecklistService {
   }
 
   async findById(id: string) {
-  return this.checklistModel.findById(id);
+    return this.checklistModel.findById(id);
   }
 
   // ==========================================
@@ -81,21 +73,17 @@ export class ChecklistService {
       });
   }
 
-
   async findAllHistory() {
-  return this.checklistModel
-    .find()
-    .populate("userId", "name email")
-    .sort({ createdAt: -1 });
-}
+    return this.checklistModel
+      .find()
+      .populate('userId', 'name email')
+      .sort({ createdAt: -1 });
+  }
 
   // ==========================================
   // Logged In User Single Date
   // ==========================================
-  async getByDate(
-    userId: string,
-    date: string,
-  ) {
+  async getByDate(userId: string, date: string) {
     const selectedDate = new Date(date);
 
     const startOfDay = new Date(selectedDate);
@@ -114,9 +102,7 @@ export class ChecklistService {
     });
 
     if (!checklist) {
-      throw new NotFoundException(
-        'Checklist not found.',
-      );
+      throw new NotFoundException('Checklist not found.');
     }
 
     return checklist;
@@ -127,12 +113,9 @@ export class ChecklistService {
   // All Checklist
   // ==========================================
   async getAllHistory() {
-    return this.checklistModel
-      .find()
-      .populate('user', 'name email role')
-      .sort({
-        checklistDate: -1,
-      });
+    return this.checklistModel.find().populate('user', 'name email role').sort({
+      checklistDate: -1,
+    });
   }
 
   // ==========================================
