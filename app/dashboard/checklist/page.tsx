@@ -9,18 +9,17 @@ import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { submitChecklist } from "@/services/checklist";
 import { HiOutlineClipboardDocumentCheck } from "react-icons/hi2";
-import jsPDF from "jspdf";
 import {
   getQuestions,
   createQuestion,
   updateQuestion,
   deleteQuestion,
 } from "@/services/question";
-import { FiCheck, FiDownload, FiTrash2, FiEdit, FiPlus } from "react-icons/fi";
+import { FiCheck, FiTrash2, FiEdit, FiPlus } from "react-icons/fi";
 import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function ChecklistPage() {
-  const { dictionary, language, setLanguage } = useLanguage();
+  const { dictionary } = useLanguage();
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const [loading, setLoading] = useState(false);
@@ -35,6 +34,8 @@ export default function ChecklistPage() {
   const [editingId, setEditingId] = useState("");
 
   const [editingText, setEditingText] = useState("");
+
+  const [activeConfirmation, setActiveConfirmation] = useState<number | null>(null);
 
   async function handleAddQuestion() {
     if (!newQuestion.trim()) return;
@@ -102,8 +103,6 @@ export default function ChecklistPage() {
     toast.success("Question updated");
   }
 
-  const [DailyExpanse, setDailyExpanse] = useState("");
-
  const [answers, setAnswers] = useState<ChecklistAnswer[]>([]);
 
   const handleEdit = (question: any) => {
@@ -121,114 +120,99 @@ export default function ChecklistPage() {
     totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
   const changeAnswer = (index: number, answer: "Yes" | "No") => {
-    if (lockedAnswers[index]) {
-      return;
-    }
+  if (lockedAnswers[index]) {
+    return;
+  }
 
-    toast.custom(
-      (t) => (
-        <div className="flex w-full max-w-sm flex-col gap-4 rounded-2xl bg-white p-5 shadow-xl">
-          <div>
-            <h3 className="font-semibold text-slate-800">Are you sure?</h3>
+  // No is the default answer
+  // Don't show confirmation or success toast
+  if (answer === "No") {
+    setAnswers((prev) => {
+      const updated = [...prev];
 
-            <p className="mt-1 text-sm text-slate-500">
-              You selected <b>{answer}</b>. You cannot change this answer later.
-            </p>
-          </div>
+      updated[index] = {
+        ...updated[index],
+        answer: "No",
+      };
 
-          <div className="flex justify-end gap-3">
-            {/* Cancel */}
-            <button
-              onClick={() => toast.dismiss(t.id)}
-              className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600"
-            >
-              No
-            </button>
-
-            {/* Confirm */}
-            <button
-              onClick={() => {
-                // Change answer
-                setAnswers((prev) => {
-                  const updated = [...prev];
-
-                  updated[index] = {
-                    ...updated[index],
-                    answer: answer,
-                  };
-
-                  return updated;
-                });
-
-                // LOCK THIS QUESTION
-                setLockedAnswers((prev) => {
-                  const updated = [...prev];
-                  updated[index] = true;
-                  return updated;
-                });
-
-                toast.dismiss(t.id);
-
-                toast.success(`${answer} selected and locked.`);
-              }}
-              className="rounded-xl bg-[#ACC822] px-4 py-2 text-sm font-semibold text-white"
-            >
-              Yes
-            </button>
-          </div>
-        </div>
-      ),
-      {
-        duration: Infinity,
-      },
-    );
-  };
-
-  const handleDownloadPdf = () => {
-    const doc = new jsPDF();
-    const marginX = 14;
-    let y = 18;
-
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text("Onboarding Checklist", marginX, y);
-
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-
-    y += 7;
-    doc.text(
-      `Completed: ${completedCount}/${totalCount} (${progress}%)`,
-      marginX,
-      y,
-    );
-
-    y += 5;
-    doc.text(`Generated: ${new Date().toLocaleString()}`, marginX, y);
-
-    y += 10;
-    doc.setDrawColor(200);
-    doc.line(marginX, y, 196, y);
-
-    y += 8;
-
-    doc.setFontSize(11);
-
-    answers.forEach((item, index) => {
-      if (y > 280) {
-        doc.addPage();
-        y = 18;
-      }
-
-      doc.text(`${index + 1}.`, marginX, y);
-      doc.text(item.question, marginX + 8, y);
-      doc.text(item.answer, 180, y);
-
-      y += 8;
+      return updated;
     });
 
-    doc.save("onboarding-checklist.pdf");
-  };
+    return;
+  }
+
+  // Prevent multiple confirmation toasts
+  if (activeConfirmation === index) {
+    return;
+  }
+
+  setActiveConfirmation(index);
+
+  toast.custom(
+    (t) => (
+      <div className="flex w-full max-w-sm flex-col gap-4 rounded-2xl bg-white p-5 shadow-xl">
+        <div>
+          <h3 className="font-semibold text-slate-800">
+            Are you sure?
+          </h3>
+
+          <p className="mt-1 text-sm text-slate-500">
+            You selected <b>Yes</b>. You cannot change this answer later.
+          </p>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          {/* Cancel */}
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              setActiveConfirmation(null);
+            }}
+            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600"
+          >
+            No
+          </button>
+
+          {/* Confirm */}
+          <button
+            onClick={() => {
+              setAnswers((prev) => {
+                const updated = [...prev];
+
+                updated[index] = {
+                  ...updated[index],
+                  answer: "Yes",
+                };
+
+                return updated;
+              });
+
+              // Lock this question
+              setLockedAnswers((prev) => {
+                const updated = [...prev];
+                updated[index] = true;
+                return updated;
+              });
+
+              // Close confirmation
+              toast.dismiss(t.id);
+              setActiveConfirmation(null);
+
+              // Success toast
+              toast.success("Yes selected and locked.");
+            }}
+            className="rounded-xl bg-[#ACC822] px-4 py-2 text-sm font-semibold text-white"
+          >
+            Yes
+          </button>
+        </div>
+      </div>
+    ),
+    {
+      duration: 30000, // 30 seconds
+    },
+  );
+};
 
   async function handleSaveQuestion() {
     try {
